@@ -1,4 +1,3 @@
-// src/pages/ColorAnalyzer.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import './ColorAnalyzer.css';

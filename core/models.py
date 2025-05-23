@@ -147,18 +147,10 @@ def str(self):
     return f"Detail #{self.id} of Sale #{self.sale_id}"
 
 
-
-
-
-
-
-
-
 class RatioOfProduct(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     raw_material = models.ForeignKey(RawMaterial, on_delete=models.CASCADE)
     ratio = models.DecimalField(max_digits=10, decimal_places=4, validators=[MinValueValidator(0)])
-
 
 
 class ProductionOrder(models.Model):
@@ -167,7 +159,6 @@ class ProductionOrder(models.Model):
         ('in_progress', 'In Progress'),
         ('completed', 'Completed'),
     ]
-
 
     
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
@@ -208,8 +199,6 @@ class ProductionOrderDetail(models.Model):
 
     def str(self):
         return f"{self.quantity} of {self.product.name} for Order #{self.production_order.id}"
-
-
 
 
 # استهلاك المواد الخام أثناء الإنتاج

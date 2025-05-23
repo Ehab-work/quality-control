@@ -1,4 +1,3 @@
-// src/pages/RawMaterialPage.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './RawMaterialPage.css';

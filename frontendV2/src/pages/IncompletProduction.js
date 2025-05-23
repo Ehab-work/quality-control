@@ -1,4 +1,3 @@
-// src/pages/IncompleteProductionOrdersPage.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './IncompletProduction.css';

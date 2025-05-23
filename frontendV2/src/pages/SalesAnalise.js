@@ -8,7 +8,7 @@ const AnalysisPage = () => {
   const [selectedProduct, setSelectedProduct] = useState('');
   const [allProducts, setAllProducts] = useState([]);
 
-  // جلب كل المنتجات للدروب داون
+
   useEffect(() => {
     axios.get('http://127.0.0.1:8000/api/products/')
       .then((res) => {
@@ -19,7 +19,6 @@ const AnalysisPage = () => {
       });
   }, []);
 
-  // جلب بيانات الجراف بناءً على المنتج المحدد
   useEffect(() => {
     const url = selectedProduct
       ? `http://127.0.0.1:8000/api/sales-summary/?product_name=${selectedProduct}`

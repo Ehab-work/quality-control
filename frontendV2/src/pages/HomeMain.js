@@ -1,4 +1,3 @@
-// src/pages/HomePage.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FiTruck, FiShoppingCart, FiBarChart2 } from 'react-icons/fi';

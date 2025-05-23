@@ -1,4 +1,3 @@
-// src/pages/ClientPage.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './ClientPage.css';

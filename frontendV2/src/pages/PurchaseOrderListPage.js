@@ -1,4 +1,3 @@
-// src/pages/PurchaseOrderListPage.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './PurchaseOrderListPage.css';

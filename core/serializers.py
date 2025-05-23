@@ -72,16 +72,11 @@ class RatioOfProductSerializer(serializers.ModelSerializer):
         fields = ['id', 'product', 'product_name', 'raw_material', 'raw_material_name', 'ratio']
 
 
-
-
-
-
-
 class ProductionOrderDetailSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True) 
     class Meta:
         model = ProductionOrderDetail
-        fields = ['id','product', 'quantity','status']  # احذف production_order من هنا
+        fields = ['id','product', 'quantity','status'] 
 
 class ProductionOrderSerializer(serializers.ModelSerializer):
     details = ProductionOrderDetailSerializer(many=True, read_only=True)
@@ -92,7 +87,7 @@ class ProductionOrderSerializer(serializers.ModelSerializer):
         fields = ['id', 'employee', 'start_date', 'expected_end_date', 'actual_end_date', 'status', 'notes', 'details','input_details']
 
     def create(self, validated_data):
-        details_data = validated_data.pop('input_details', [])  # safe pop
+        details_data = validated_data.pop('input_details', []) 
         order = ProductionOrder.objects.create(**validated_data)
         for detail in details_data:
             ProductionOrderDetail.objects.create(production_order=order, **detail)
@@ -140,7 +135,6 @@ class SalesOrderSerializer(serializers.ModelSerializer):
             tax   = det.get('taxes', 0)
             line_total = qty * price + tax
 
-            # create detail WITHOUT unpacking det['total_price']
             SalesInvoiceDetail.objects.create(
                 sale=order,
                 product=det['product'],

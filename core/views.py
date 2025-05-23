@@ -56,19 +56,6 @@ def product_profit_analysis(request):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 @api_view(['GET'])
 def top_selling_products(request):
     data = (
@@ -78,10 +65,6 @@ def top_selling_products(request):
         .order_by('-total_sold')[:10]
     )
     return Response(data)
-
-
-
-
 
 
 
@@ -117,8 +100,6 @@ def raw_material_costs(request):
 
 
 
-
-
 @api_view(['GET'])
 def raw_material_usage_by_product(request):
     data = (
@@ -141,13 +122,6 @@ def raw_material_usage_by_product(request):
     return Response(formatted)
 
 
-
-
-
-
-
-
-
 @api_view(['GET'])
 def list_incomplete_production_orders(request):
     orders = ProductionOrder.objects.exclude(status='completed')
@@ -166,21 +140,9 @@ def total_production_by_product(request):
     return Response(data)
 
 
-
-
-
-
-
-
-
-
 @api_view(['GET'])
 def client_order_summary(request):
-    """
-    هذا العرض يُرجع لكل عميل:
-    - عدد الطلبات
-    - إجمالي قيمة المبيعات
-    """
+    
     data = (
         SalesOrder.objects
         .values('client__name')
@@ -435,6 +397,8 @@ def update_production_order_status(request, order_id):
     order.save()
 
     return Response({'message': 'Production order and related sales order updated successfully.'})
+
+
 @api_view(['PATCH'])
 def update_order_detail_status(request, detail_id):
 
@@ -574,11 +538,6 @@ def add_invoice_detail(request, order_id):
         order.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
 
 
 @api_view(['PATCH'])
@@ -824,12 +783,6 @@ def update_client_status(request, order_id):
             )
 
     return Response({'message': 'Status updated and production order created with product details (if confirmed).'})
-
-
-
-
-
-
 
 @api_view(['GET'])
 def list_confirmed_sales_orders(request):

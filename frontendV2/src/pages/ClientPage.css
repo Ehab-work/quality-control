@@ -59,7 +59,7 @@
   }
   
   .client-table thead {
-    background-color: #333a56; /* ✅ solid header background */
+    background-color: #333a56; 
   }
   
   .client-table th,
