@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,15 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-   #'core',
-    'core.apps.CoreConfig',  # مش بس 'core'
-    'corsheaders',
-    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
-    'channels',
-    #'dpds',  # مكتبة مساعدة لـ Plotly Dash
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    'core.apps.CoreConfig',
+    'corsheaders',  
 ]
-
-
 
 
 MIDDLEWARE = [
@@ -59,16 +57,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'django_plotly_dash.middleware.BaseMiddleware',
-    'django_plotly_dash.middleware.ExternalRedirectionMiddleware',
 ]
-
-X_FRAME_OPTIONS = 'SAMEORIGIN'  # مهم عشان يشتغل جوه iframe
-ASGI_APPLICATION = 'config.asgi.application'  # لو مشروعك اسمه config
-
-
-
 ROOT_URLCONF = 'config.urls'
+
 
 TEMPLATES = [
     {
@@ -150,6 +141,18 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
    
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+}
 
 
 

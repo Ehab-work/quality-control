@@ -1,0 +1,108 @@
+.product-ratio-page {
+    padding: 40px 60px;
+    background-color: #1f1f2f;
+    color: white;
+    min-height: 100vh;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .sub-title {
+    margin-top: 30px;
+    font-size: 1.5rem;
+  }
+  
+  .filter-bar {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .ratio-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 30px;
+  }
+  
+  .ratio-form select,
+  .ratio-form input {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background-color: #2c2c3e;
+    color: white;
+  }
+  
+  .ratio-form button {
+    padding: 10px 20px;
+    background-color: #8604a0;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .ratio-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #2c2c3e;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .ratio-table thead {
+    background-color: #333a56;
+  }
+  
+  .ratio-table th,
+  .ratio-table td {
+    padding: 12px 18px;
+    text-align: left;
+    border-top: 1px solid #444;
+  }
+  
+  .edit-btn {
+    background-color: #666;
+    color: white;
+    padding: 6px 12px;
+    margin-right: 8px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .edit-btn:hover {
+    background-color: #888;
+  }
+  
+  .delete-btn {
+    background-color: #e63946;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .delete-btn:hover {
+    background-color: #c82333;
+  }
+  
+  .message {
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+  
+  .message.success {
+    color: #5ee7df;
+  }
+  
+  .message.error {
+    color: #ff4d4f;
+  }
+  

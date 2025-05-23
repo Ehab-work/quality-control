@@ -1,0 +1,63 @@
+/* SignInPage.css */
+
+.signin-container {
+  background-color: #1f1f2f;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.signin-title {
+  font-size: 2rem;
+  margin-bottom: 30px;
+}
+
+.signin-form {
+  width: 100%;
+  max-width: 400px;
+  background-color: #2a2a3d;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.signin-field {
+  margin-bottom: 20px;
+}
+
+.signin-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #ccc;
+}
+
+.signin-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #1f1f2f;
+  color: white;
+}
+
+.signin-button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  background: linear-gradient(135deg, #057e76, #8604a0);
+  color: white;
+  cursor: pointer;
+}
+
+.signin-error {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+}

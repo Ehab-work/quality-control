@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Supplier,ProductionOrder,SalesOrder,SalesInvoiceDetail,Client, Employee, ProductionOrderDetail,RawMaterial,PurchaseOrder,ProductionOrder, PurchaseInvoiceDetail,Product,RatioOfProduct
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -70,20 +71,28 @@ class RatioOfProductSerializer(serializers.ModelSerializer):
         model = RatioOfProduct
         fields = ['id', 'product', 'product_name', 'raw_material', 'raw_material_name', 'ratio']
 
+
+
+
+
+
+
 class ProductionOrderDetailSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True) 
     class Meta:
         model = ProductionOrderDetail
-        fields = ['product', 'quantity','status']  # احذف production_order من هنا
+        fields = ['id','product', 'quantity','status']  # احذف production_order من هنا
 
 class ProductionOrderSerializer(serializers.ModelSerializer):
-    details = ProductionOrderDetailSerializer(many=True)
+    details = ProductionOrderDetailSerializer(many=True, read_only=True)
+    input_details = ProductionOrderDetailSerializer(many=True, write_only=True)
 
     class Meta:
         model = ProductionOrder
-        fields = ['id', 'employee', 'start_date', 'expected_end_date', 'actual_end_date', 'status', 'notes', 'details']
+        fields = ['id', 'employee', 'start_date', 'expected_end_date', 'actual_end_date', 'status', 'notes', 'details','input_details']
 
     def create(self, validated_data):
-        details_data = validated_data.pop('details')
+        details_data = validated_data.pop('input_details', [])  # safe pop
         order = ProductionOrder.objects.create(**validated_data)
         for detail in details_data:
             ProductionOrderDetail.objects.create(production_order=order, **detail)
@@ -93,46 +102,69 @@ class ProductionOrderSerializer(serializers.ModelSerializer):
         rep = super().to_representation(instance)
         rep['details'] = ProductionOrderDetailSerializer(instance.details.all(), many=True).data
         return rep
-    
+# core/serializers.py
+
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         fields = '__all__'
 
+
 class SalesInvoiceDetailSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = SalesInvoiceDetail
-        fields = ['product', 'quantity', 'unit_price', 'taxes', 'total_price']
+        fields = ['id', 'product', 'quantity', 'unit_price', 'taxes', 'total_price']
+
 
 class SalesOrderSerializer(serializers.ModelSerializer):
     details = SalesInvoiceDetailSerializer(many=True)
 
     class Meta:
         model = SalesOrder
-        fields = ['id','employee', 'client', 'sale_date', 'total_amount', 'status', 'delivery_deadline', 'notes', 'details']
+        fields = [
+            'id', 'employee', 'client', 'sale_date', 'modified_at',
+            'total_amount', 'status', 'client_status', 'delivery_deadline',
+            'notes', 'details'
+        ]
 
     def create(self, validated_data):
         details_data = validated_data.pop('details')
-        total = 0
         order = SalesOrder.objects.create(**validated_data)
 
-        for detail in details_data:
-            quantity = detail['quantity']
-            unit_price = detail['unit_price']
-            taxes = detail.get('taxes', 0)
-            total_price = (quantity * unit_price) + taxes
-            total += total_price
+        total_amount = 0
+        for det in details_data:
+            qty   = det['quantity']
+            price = det['unit_price']
+            tax   = det.get('taxes', 0)
+            line_total = qty * price + tax
 
+            # create detail WITHOUT unpacking det['total_price']
             SalesInvoiceDetail.objects.create(
                 sale=order,
-                product=detail['product'],
-                quantity=quantity,
-                unit_price=unit_price,
-                taxes=taxes,
-                total_price=total_price
+                product=det['product'],
+                quantity=qty,
+                unit_price=price,
+                taxes=tax,
+                total_price=line_total
             )
+            total_amount += line_total
 
-        order.total_amount = total
+        order.total_amount = total_amount
         order.save()
-
         return order
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        
+        # أضف role
+        token['role'] = user.employee.role if hasattr(user, 'employee') else 'unknown'
+        token['username'] = user.username
+        return token
+
+
+

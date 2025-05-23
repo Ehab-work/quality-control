@@ -1,0 +1,72 @@
+/* src/pages/ProductionLayout.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+:root {
+  --primary-bg: #1f1f2f;
+  --card-hover: rgba(255, 255, 255, 0.15);
+  --font: 'Poppins', sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font);
+  background-color: var(--primary-bg);
+  color: white;
+}
+
+.split-home {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--primary-bg);
+}
+
+.split-left {
+  width: 280px;
+  background: linear-gradient(135deg, #057e76, #8604a0);
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.split-title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.split-card {
+  display: block;
+  padding: 12px 18px;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  font-size: 1.1rem;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.split-card:hover {
+  background-color: var(--card-hover);
+  transform: translateX(5px);
+}
+
+.split-right {
+  flex: 1;
+  padding: 60px;
+  overflow-y: auto;
+}
+
+.welcome-title {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  /* text-shadow removed as per preference */
+}
+
+.welcome-text {
+  font-size: 1.2rem;
+  max-width: 600px;
+  line-height: 1.6;
+  color: #dddddd;
+}

@@ -13,3 +13,29 @@ dist/
 
 # VS Code
 .vscode/
+
+# Virtual environment
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.sqlite3
+
+# Django secret files
+*.log
+*.pot
+*.pyc
+*.pyo
+*.db
+
+# Environment variables
+.env
+
+# Static & media
+staticfiles/
+media/
+
+# VSCode settings 
+.vscode/
