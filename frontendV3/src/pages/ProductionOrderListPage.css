@@ -1,0 +1,56 @@
+.production-list-page {
+    padding: 40px 60px;
+    background-color: #1f1f2f;
+    color: white;
+    min-height: 100vh;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+    margin-bottom: 30px;
+  }
+  
+  .order-card {
+    border: 1px solid #444;
+    background-color: #2c2c3e;
+    padding: 20px;
+    margin-bottom: 25px;
+    border-radius: 10px;
+  }
+  
+  .order-card h4 {
+    margin-top: 0;
+  }
+  
+  .complete-btn {
+    margin-top: 10px;
+    padding: 10px 16px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .complete-btn:hover {
+    background-color: #218838;
+  }
+  
+  .product-list {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  .product-list li {
+    margin: 10px 0;
+  }
+  
+  .status-select {
+    margin-left: 10px;
+    padding: 6px 12px;
+    background-color: #2c2c3e;
+    color: white;
+    border: 1px solid #666;
+    border-radius: 6px;
+  }
+  

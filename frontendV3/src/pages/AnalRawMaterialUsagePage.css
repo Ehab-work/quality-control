@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+.raw-usage-container {
+  background-color: #1f1f2f;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  color: white;
+  text-align: center;
+  padding: 60px 40px;
+}
+
+.raw-usage-title {
+  font-size: 2rem;
+  margin-bottom: 30px;
+}
+
+.raw-usage-chart {
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: #2a2a3d;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.raw-usage-loading {
+  font-size: 1.1rem;
+  color: #ccc;
+  margin-top: 40px;
+}

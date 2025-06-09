@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+.profit-container {
+  background-color: #1f1f2f;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  color: white;
+  padding: 60px 40px;
+  text-align: center;
+}
+
+.profit-title {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.profit-description {
+  font-size: 1rem;
+  color: #ccc;
+  margin-bottom: 40px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.profit-bar {
+  max-width: 800px;
+  margin: 0 auto 60px;
+  background-color: #2a2a3d;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.profit-pie {
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: #2a2a3d;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
