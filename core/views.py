@@ -22,7 +22,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .serializers import CustomTokenObtainPairSerializer
 import logging
-
+from .permissions import RolePermission, IsSales, IsPurchase, IsProduction, IsCEO
 logger = logging.getLogger(__name__)
 
 # core/views.py
@@ -30,8 +30,6 @@ logger = logging.getLogger(__name__)
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsCEO, IsPurchase, IsProduction, IsSales
-from .permissions import RolePermission
 from functools import partial
 
 
@@ -72,8 +70,9 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def product_profit_analysis(request):
+    request._request.required_role = 'ceo'
     profit_data = (
         SalesInvoiceDetail.objects
         .annotate(
@@ -95,8 +94,9 @@ def product_profit_analysis(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def top_selling_products(request):
+    request._request.required_role = ['ceo','sales']
     data = (
         SalesInvoiceDetail.objects
         .values('product__name')
@@ -107,15 +107,17 @@ def top_selling_products(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def raw_material_stock_pie(request):
+    request._request.required_role = ['ceo', 'purchase']
     data = list(RawMaterial.objects.values('name', 'quantity'))
     return Response(data)
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def raw_material_cost_pie(request):
+    request._request.required_role = ['ceo', 'purchase']
     data = (
         PurchaseInvoiceDetail.objects
         .values(name=F('raw_material__name'))
@@ -125,8 +127,9 @@ def raw_material_cost_pie(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def raw_material_costs(request):
+    request._request.required_role = ['ceo', 'purchase']
     total_expr = ExpressionWrapper(F('unit_price') * F('quantity'), output_field=DecimalField())
     
     data = (
@@ -139,8 +142,9 @@ def raw_material_costs(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def raw_material_usage_by_product(request):
+    request._request.required_role = ['ceo', 'production']
     data = (
         RatioOfProduct.objects
         .values('raw_material__name', 'product__name')
@@ -162,8 +166,9 @@ def raw_material_usage_by_product(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def total_production_by_product(request):
+    request._request.required_role = ['ceo', 'production']
     data = (
         ProductionOrderDetail.objects
         .values('product__name')
@@ -173,8 +178,9 @@ def total_production_by_product(request):
     return Response(data)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def client_order_summary(request):
+    request._request.required_role = ['ceo', 'sales']
     data = (
         SalesOrder.objects
         .values('client__name')
@@ -198,8 +204,9 @@ def get_quarter(month):
         return 'Q4'
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def client_order_distribution_by_quarter(request):
+    request._request.required_role = ['ceo', 'sales']
     orders = SalesOrder.objects.annotate(
         month=ExtractMonth('sale_date')
     ).values(
@@ -232,8 +239,9 @@ def client_order_distribution_by_quarter(request):
     return Response(result)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def average_order_price_for_client(request, client_id):
+    request._request.required_role = ['ceo', 'sales']
     orders = SalesOrder.objects.filter(client_id=client_id)
     if not orders.exists():
         return Response({'message': 'لا توجد فواتير لهذا العميل', 'average': 0})
@@ -242,8 +250,9 @@ def average_order_price_for_client(request, client_id):
     return Response({'client_id': client_id, 'average_order_total': total})
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def client_sales_share(request):
+    request._request.required_role = ['ceo', 'sales']
     sales_data = (
         SalesInvoiceDetail.objects
         .values('sale__client__name')
@@ -253,8 +262,9 @@ def client_sales_share(request):
     return Response(sales_data)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def product_summary_by_client(request, client_id):
+    request._request.required_role = ['ceo', 'sales']
     details = (
         SalesInvoiceDetail.objects
         .filter(sale__client_id=client_id)
@@ -265,8 +275,9 @@ def product_summary_by_client(request, client_id):
     return Response(details)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def top_products_by_client(request, client_id):
+    request._request.required_role = ['ceo', 'sales']
     get_object_or_404(Client, pk=client_id)
 
     data = (
@@ -281,14 +292,15 @@ def top_products_by_client(request, client_id):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, RolePermission])
 def list_employees(request):
-    request._request.required_role = 'Sales'
+    request._request.required_role = ['sales','ceo']
     employees = Employee.objects.all()
     serializer = EmployeeSerializer(employees, many=True)
     return Response(serializer.data)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsPurchase])
+@permission_classes([IsAuthenticated, RolePermission])
 def add_supplier(request):
+    request._request.required_role = ['purchase', 'ceo']
     serializer = SupplierSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -296,15 +308,17 @@ def add_supplier(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsPurchase])
+@permission_classes([IsAuthenticated, RolePermission])
 def list_suppliers(request):
+    request._request.required_role = ['purchase', 'ceo']
     suppliers = Supplier.objects.all()
     serializer = SupplierSerializer(suppliers, many=True)
     return Response(serializer.data)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsPurchase])
+@permission_classes([IsAuthenticated, RolePermission])
 def add_raw_material(request):
+    request._request.required_role = ['purchase', 'ceo', 'production']
     serializer = RawMaterialSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -312,15 +326,17 @@ def add_raw_material(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsPurchase])
+@permission_classes([IsAuthenticated, RolePermission])
 def list_raw_materials(request):
+    request._request.required_role = ['purchase', 'ceo','production']
     materials = RawMaterial.objects.all()
     serializer = RawMaterialSerializer(materials, many=True)
     return Response(serializer.data)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsPurchase])
+@permission_classes([IsAuthenticated, RolePermission])
 def create_purchase_order(request):
+    request._request.required_role = ['purchase', 'ceo']
     serializer = PurchaseOrderSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -328,15 +344,17 @@ def create_purchase_order(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsPurchase])
+@permission_classes([IsAuthenticated, RolePermission])
 def list_purchase_orders(request):
+    request._request.required_role = ['purchase', 'ceo']
     orders = PurchaseOrder.objects.all().order_by('-id')
     serializer = PurchaseOrderListSerializer(orders, many=True)
     return Response(serializer.data)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsProduction])
+@permission_classes([IsAuthenticated, RolePermission])
 def add_product(request):
+    request._request.required_role = ['production', 'ceo']
     serializer = ProductSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -346,22 +364,24 @@ def add_product(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, RolePermission])
 def list_products(request):
-    request._request.required_role = ['Production', 'Sales']
+    request._request.required_role = ['production', 'sales', 'ceo']
     products = Product.objects.all().order_by('-id')
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsProduction])
+@permission_classes([IsAuthenticated, RolePermission])
 def list_ratios(request):
+    request._request.required_role = ['production', 'ceo']
     ratios = RatioOfProduct.objects.all()
     serializer = RatioOfProductSerializer(ratios, many=True)
     return Response(serializer.data)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsProduction])
+@permission_classes([IsAuthenticated, RolePermission])
 def add_ratio(request):
+    request._request.required_role = ['production', 'ceo']
     serializer = RatioOfProductSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -369,8 +389,9 @@ def add_ratio(request):
     return Response(serializer.errors, status=400)
 
 @api_view(['PATCH'])
-@permission_classes([IsAuthenticated, IsProduction])
+@permission_classes([IsAuthenticated, RolePermission])
 def update_ratio(request, ratio_id):
+    request._request.required_role = ['production', 'ceo']
     try:
         ratio = RatioOfProduct.objects.get(pk=ratio_id)
     except RatioOfProduct.DoesNotExist:
@@ -382,8 +403,9 @@ def update_ratio(request, ratio_id):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
-@permission_classes([IsAuthenticated, IsProduction])
+@permission_classes([IsAuthenticated, RolePermission])
 def delete_ratio(request, ratio_id):
+    request._request.required_role = ['production', 'ceo']
     try:
         ratio = RatioOfProduct.objects.get(pk=ratio_id)
     except RatioOfProduct.DoesNotExist:
@@ -392,8 +414,9 @@ def delete_ratio(request, ratio_id):
     return Response({'message': 'Ratio deleted'}, status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsProduction])
+@permission_classes([IsAuthenticated, RolePermission])
 def create_production_order(request):
+    request._request.required_role = ['production', 'ceo']
     serializer = ProductionOrderSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -401,8 +424,9 @@ def create_production_order(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsProduction])
+@permission_classes([IsAuthenticated, RolePermission])
 def list_production_orders(request):
+    request._request.required_role = ['production', 'ceo']
     orders = ProductionOrder.objects.prefetch_related('details').all()
     serializer = ProductionOrderSerializer(orders, many=True)
     return Response(serializer.data)
@@ -410,15 +434,17 @@ def list_production_orders(request):
 #def update_production_order_status(request, order_id):
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsProduction])
+@permission_classes([IsAuthenticated, RolePermission])
 def list_incomplete_production_orders(request):
+    request._request.required_role = ['production', 'ceo']
     orders = ProductionOrder.objects.exclude(status='completed').prefetch_related('details')
     serializer = ProductionOrderSerializer(orders, many=True)
     return Response(serializer.data)
 
 @api_view(['PATCH'])
-@permission_classes([IsAuthenticated, IsProduction])
+@permission_classes([IsAuthenticated, RolePermission])
 def update_production_order_status(request, order_id):
+    request._request.required_role = ['production', 'ceo']
     try:
         order = ProductionOrder.objects.select_related('sales_order').get(pk=order_id)
     except ProductionOrder.DoesNotExist:
@@ -452,9 +478,9 @@ def update_production_order_status(request, order_id):
 
 
 @api_view(['PATCH'])
-@permission_classes([IsAuthenticated, IsProduction])
+@permission_classes([IsAuthenticated, RolePermission])
 def update_order_detail_status(request, detail_id):
-
+    request._request.required_role = ['production', 'ceo']
     try:
         detail = ProductionOrderDetail.objects.get(pk=detail_id)
     except ProductionOrderDetail.DoesNotExist:
@@ -471,7 +497,7 @@ def update_order_detail_status(request, detail_id):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, RolePermission])
 def add_client(request):
-    request._request.required_role = 'Sales'
+    request._request.required_role = ['sales', 'ceo']
     serializer = ClientSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -483,7 +509,7 @@ def add_client(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, RolePermission])
 def list_clients(request):
-    request._request.required_role = 'Sales'
+    request._request.required_role = ['sales', 'ceo']
     clients = Client.objects.all()
     serializer = ClientSerializer(clients, many=True)
     return Response(serializer.data)
@@ -491,8 +517,9 @@ def list_clients(request):
 # عرض كل فواتير البيع التي لم يتم تأكيدها من العميل
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsSales])
+@permission_classes([IsAuthenticated, RolePermission])
 def list_unconfirmed_sales_orders(request):
+     request._request.required_role = ['Sales', 'ceo']
      orders = SalesOrder.objects.exclude(client_status='confirmed').prefetch_related('details')
      serializer = SalesOrderSerializer(orders, many=True) 
      return Response(serializer.data)
@@ -501,7 +528,8 @@ def list_unconfirmed_sales_orders(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, RolePermission])
-def list_confirmed_sales_orders_with_pending_production(request, required_role='Sales'):
+def list_confirmed_sales_orders_with_pending_production(request):
+     request._request.required_role = ['sales', 'ceo']
      orders = SalesOrder.objects.filter( client_status='confirmed',
                                          status__in=['pending', 'in_progress'] 
                                          ).prefetch_related('details') 
@@ -510,8 +538,9 @@ def list_confirmed_sales_orders_with_pending_production(request, required_role='
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsSales])
+@permission_classes([IsAuthenticated, RolePermission])
 def list_sales_orders_ready_to_archive(request):
+    request._request.required_role = ['sales', 'ceo']
     orders = SalesOrder.objects.filter(
         client_status='confirmed',
         status='completed'
@@ -523,7 +552,8 @@ def list_sales_orders_ready_to_archive(request):
 
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated, RolePermission])
-def mark_sales_order_as_delivered(request, order_id, required_role='Sales'):
+def mark_sales_order_as_delivered(request, order_id):
+    request._request.required_role = ['sales', 'ceo']
     try:
         order = SalesOrder.objects.get(pk=order_id)
     except SalesOrder.DoesNotExist:
@@ -542,7 +572,7 @@ def mark_sales_order_as_delivered(request, order_id, required_role='Sales'):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, RolePermission])
 def create_sales_order(request):
-    request._request.required_role = 'Sales'
+    request._request.required_role = ['sales', 'ceo']
     serializer = SalesOrderSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -554,7 +584,8 @@ def create_sales_order(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, RolePermission])
-def list_sales_orders(request,required_role='Sales'):
+def list_sales_orders(request):
+    request._request.required_role = ['sales', 'ceo']
     queryset = SalesOrder.objects.all()
     serializer = SalesOrderSerializer(queryset, many=True)
     return Response(serializer.data)
@@ -562,7 +593,8 @@ def list_sales_orders(request,required_role='Sales'):
 
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated, RolePermission])
-def update_sales_order(request, order_id, required_role='Sales'):
+def update_sales_order(request, order_id):
+    request._request.required_role = ['sales', 'ceo']
     try:
         order = SalesOrder.objects.get(pk=order_id)
     except SalesOrder.DoesNotExist:
@@ -583,7 +615,8 @@ def update_sales_order(request, order_id, required_role='Sales'):
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated, RolePermission])
-def delete_sales_order(request, order_id, required_role='Sales'):
+def delete_sales_order(request, order_id):
+    request._request.required_role = ['sales', 'ceo']
     try:
         order = SalesOrder.objects.get(pk=order_id)
         order.delete()
@@ -594,7 +627,8 @@ def delete_sales_order(request, order_id, required_role='Sales'):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, RolePermission])
-def add_invoice_detail(request, order_id, required_role='Sales'):
+def add_invoice_detail(request, order_id):
+    request._request.required_role = ['sales', 'ceo']
     try:
         order = SalesOrder.objects.get(pk=order_id)
     except SalesOrder.DoesNotExist:
@@ -612,7 +646,8 @@ def add_invoice_detail(request, order_id, required_role='Sales'):
 
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated, RolePermission])
-def update_sales_order_with_details(request, order_id, required_role='Sales'):
+def update_sales_order_with_details(request, order_id):
+    request._request.required_role = ['sales', 'ceo']
     try:
         order = SalesOrder.objects.get(pk=order_id)
     except SalesOrder.DoesNotExist:
@@ -652,7 +687,8 @@ def update_sales_order_with_details(request, order_id, required_role='Sales'):
 
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated, RolePermission])
-def update_invoice_detail(request, detail_id, required_role='Sales'):
+def update_invoice_detail(request, detail_id):
+    request._request.required_role = ['sales', 'ceo']
     try:
         detail = SalesInvoiceDetail.objects.get(pk=detail_id)
     except SalesInvoiceDetail.DoesNotExist:
@@ -672,8 +708,9 @@ def update_invoice_detail(request, detail_id, required_role='Sales'):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def delete_invoice_detail(request, detail_id):
+    request._request.required_role = ['sales', 'ceo']
     try:
         detail = SalesInvoiceDetail.objects.get(pk=detail_id)
     except SalesInvoiceDetail.DoesNotExist:
@@ -688,8 +725,9 @@ def delete_invoice_detail(request, detail_id):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def sales_summary(request):
+    request._request.required_role = ['sales', 'ceo']
     product_name = request.GET.get('product_name')
 
     queryset = SalesInvoiceDetail.objects.values('product__name').annotate(total_quantity=Sum('quantity'))
@@ -700,8 +738,9 @@ def sales_summary(request):
     return Response(queryset)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def sales_summary_by_date(request):
+    request._request.required_role = ['sales', 'ceo']
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
@@ -716,8 +755,9 @@ def sales_summary_by_date(request):
 
 
 @api_view(['PUT', 'PATCH'])
-@permission_classes([IsAuthenticated, IsPurchase])
+@permission_classes([IsAuthenticated, RolePermission])
 def update_supplier(request, supplier_id):
+    request._request.required_role = ['purchase', 'ceo']
     try:
         supplier = Supplier.objects.get(id=supplier_id)
     except Supplier.DoesNotExist:
@@ -730,8 +770,9 @@ def update_supplier(request, supplier_id):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
-@permission_classes([IsAuthenticated, IsPurchase])
+@permission_classes([IsAuthenticated, RolePermission])
 def delete_supplier(request, supplier_id):
+    request._request.required_role = ['purchase', 'ceo']
     try:
         supplier = Supplier.objects.get(id=supplier_id)
         supplier.delete()
@@ -741,8 +782,9 @@ def delete_supplier(request, supplier_id):
 
 
 @api_view(['PATCH'])
-@permission_classes([IsAuthenticated, IsSales])
+@permission_classes([IsAuthenticated, RolePermission])
 def update_client(request, client_id):
+    request._request.required_role = ['sales', 'ceo']
     try:
         client = Client.objects.get(id=client_id)
     except Client.DoesNotExist:
@@ -755,8 +797,9 @@ def update_client(request, client_id):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def delete_client(request, client_id):
+    request._request.required_role = ['sales', 'ceo']
     try:
         client = Client.objects.get(id=client_id)
         client.delete()
@@ -766,8 +809,9 @@ def delete_client(request, client_id):
     
 
 @api_view(['PATCH'])
-@permission_classes([IsAuthenticated, IsPurchase])
+@permission_classes([IsAuthenticated, RolePermission])
 def update_raw_material(request, material_id):
+    request._request.required_role = ['purchase', 'ceo']
     try:
         material = RawMaterial.objects.get(id=material_id)
     except RawMaterial.DoesNotExist:
@@ -781,8 +825,9 @@ def update_raw_material(request, material_id):
 
 
 @api_view(['DELETE'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def delete_raw_material(request, material_id):
+    request._request.required_role = ['purchase', 'ceo']
     try:
         material = RawMaterial.objects.get(id=material_id)
         material.delete()
@@ -793,8 +838,9 @@ def delete_raw_material(request, material_id):
 # core/views
 
 @api_view(['PATCH'])
-@permission_classes([IsAuthenticated, IsProduction])
+@permission_classes([IsAuthenticated, RolePermission])
 def update_product(request, product_id):
+    request._request.required_role = ['production', 'ceo']
     try:
         product = Product.objects.get(id=product_id)
     except Product.DoesNotExist:
@@ -808,8 +854,9 @@ def update_product(request, product_id):
 
 
 @api_view(['DELETE'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def delete_product(request, product_id):
+    request._request.required_role = ['production', 'ceo']
     try:
         product = Product.objects.get(id=product_id)
         product.delete()
@@ -821,8 +868,9 @@ def delete_product(request, product_id):
 # core/views.py
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsCEO])
+@permission_classes([IsAuthenticated, RolePermission])
 def get_sales_order_by_id(request, order_id):
+    request._request.required_role = ['sales', 'ceo']
     try:
         order = SalesOrder.objects.get(id=order_id)
         serializer = SalesOrderSerializer(order)
@@ -833,8 +881,9 @@ def get_sales_order_by_id(request, order_id):
 
 
 @api_view(['PATCH'])
-@permission_classes([IsAuthenticated, IsSales])
+@permission_classes([IsAuthenticated, RolePermission])
 def update_client_status(request, order_id):
+    request._request.required_role = ['sales', 'ceo']
     try:
         order = SalesOrder.objects.get(pk=order_id)
     except SalesOrder.DoesNotExist:
@@ -870,8 +919,9 @@ def update_client_status(request, order_id):
     return Response({'message': 'Status updated and production order created with product details (if confirmed).'})
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsSales])
+@permission_classes([IsAuthenticated, RolePermission])
 def list_confirmed_sales_orders(request):
+    request._request.required_role = ['sales', 'ceo']  
     from .models import SalesOrder
     from .serializers import SalesOrderSerializer
 
@@ -880,8 +930,9 @@ def list_confirmed_sales_orders(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsSales])
+@permission_classes([IsAuthenticated, RolePermission])
 def sales_orders_by_date(request):
+    request._request.required_role = ['sales', 'ceo']
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
@@ -894,8 +945,9 @@ def sales_orders_by_date(request):
 
 # core/views.py
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsSales])
+@permission_classes([IsAuthenticated, RolePermission])
 def sales_orders_by_client(request, client_id):
+    request._request.required_role = ['sales', 'ceo']
     orders = SalesOrder.objects.filter(client_id=client_id)
     serializer = SalesOrderSerializer(orders, many=True)
     return Response(serializer.data)
@@ -905,8 +957,9 @@ def sales_orders_by_client(request, client_id):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsProduction])
+@permission_classes([IsAuthenticated, RolePermission])
 def analyze_uploaded_image(request):
+    request._request.required_role = ['production', 'ceo']
     image_file = request.FILES.get('image')
     if not image_file:
         return Response({'error': 'No image uploaded'}, status=400)

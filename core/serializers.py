@@ -148,21 +148,15 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['username'] = user.username
         token['role'] = user.employee.role if hasattr(user, 'employee') else 'unknown'
-        token['is_superuser'] = user.is_superuser  # ✅ أضف هذا السطر
+        token['is_superuser'] = user.is_superuser  # هذا السطر مهم
         return token
 
     def validate(self, attrs):
         data = super().validate(attrs)
         data['username'] = self.user.username
         data['role'] = self.user.employee.role if hasattr(self.user, 'employee') else 'unknown'
-        data['is_superuser'] = self.user.is_superuser  # ✅ وأضف هذا أيضًا
+        data['is_superuser'] = self.user.is_superuser  # وهذا السطر مهم
         return data
 
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
-        data = super().validate(attrs)
-        data['username'] = self.user.username
-        data['role'] = self.user.employee.role if hasattr(self.user, 'employee') else 'Unknown'
-        return data
 
 

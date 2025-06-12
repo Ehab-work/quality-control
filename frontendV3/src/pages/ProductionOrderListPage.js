@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; 
 import './ProductionOrderListPage.css';
 
 const ProductionOrderListPage = () => {
@@ -14,9 +14,9 @@ const ProductionOrderListPage = () => {
   const fetchData = async () => {
     try {
       const [orderRes, productRes, employeeRes] = await Promise.all([
-        axios.get('http://127.0.0.1:8000/api/production-orders/'),
-        axios.get('http://127.0.0.1:8000/api/products/'),
-        axios.get('http://127.0.0.1:8000/api/employees/')
+        axiosInstance.get('production-orders/'),
+        axiosInstance.get('products/'),
+        axiosInstance.get('employees/')
       ]);
 
       setOrders(orderRes.data);
@@ -35,7 +35,7 @@ const ProductionOrderListPage = () => {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      const res = await axios.patch(`http://127.0.0.1:8000/api/production-orders/${orderId}/update-status/`, {
+      const res = await axiosInstance.patch(`${orderId}/update-status/`, {
         status: newStatus
       });
       alert(res.data.message || 'Order status updated successfully.');
@@ -49,7 +49,7 @@ const ProductionOrderListPage = () => {
 
   const updateProductStatus = async (detailId, newStatus) => {
     try {
-      const res = await axios.patch(`http://127.0.0.1:8000/api/production-orders/details/${detailId}/update-status/`, {
+      const res = await axiosInstance.patch(`${detailId}/update-status/`, {
         status: newStatus
       });
       alert(res.data.message || 'Product status updated successfully.');

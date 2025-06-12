@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; 
 import './ProductRatioPage.css';
 
 const ProductRatioPage = () => {
@@ -23,17 +23,17 @@ const ProductRatioPage = () => {
   }, []);
 
   const fetchProducts = async () => {
-    const res = await axios.get('http://127.0.0.1:8000/api/products/');
+    const res = await axiosInstance.get('products/');
     setProducts(res.data);
   };
 
   const fetchMaterials = async () => {
-    const res = await axios.get('http://127.0.0.1:8000/api/raw-materials/');
+    const res = await axiosInstance.get('raw-materials/');
     setMaterials(res.data);
   };
 
   const fetchRatios = async () => {
-    const res = await axios.get('http://127.0.0.1:8000/api/product-ratios/');
+    const res = await axiosInstance.get('product-ratios/');
     setRatios(res.data);
   };
 
@@ -58,12 +58,12 @@ const ProductRatioPage = () => {
 
     try {
       if (editingId) {
-        await axios.patch(`http://127.0.0.1:8000/api/ratios/${editingId}/update/`, {
+        await axiosInstance.patch(`${editingId}/update/`, {
           ratio: qty
         });
         setMessage('Ratio updated successfully.');
       } else {
-        await axios.post('http://127.0.0.1:8000/api/add-ratio/', {
+        await axiosInstance.post('add-ratio/', {
           product: formData.product,
           raw_material: formData.raw_material,
           ratio: qty
@@ -92,7 +92,7 @@ const ProductRatioPage = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this ratio?')) return;
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/ratios/${id}/delete/`);
+      await axiosInstance.delete(`${id}/delete/`);
       setMessage('Ratio deleted successfully.');
       if (editingId === id) {
         setEditingId(null);

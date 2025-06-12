@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; 
 import './IncompletProduction.css';
 
 const IncompleteProductionOrdersPage = () => {
@@ -12,7 +12,7 @@ const IncompleteProductionOrdersPage = () => {
 
   const fetchIncompleteOrders = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/analytics/production/incomplete/');
+      const res = await axiosInstance.get('production/incomplete/');
       setOrders(res.data);
     } catch (err) {
       console.error('Error fetching incomplete production orders:', err);
@@ -24,7 +24,7 @@ const IncompleteProductionOrdersPage = () => {
   const markAsCompleted = async (orderId) => {
     if (window.confirm('Are you sure you want to mark this order as completed?')) {
       try {
-        await axios.patch(`http://127.0.0.1:8000/api/production-orders/${orderId}/update-status/`, {
+        await axiosInstance.patch(`${orderId}/update-status/`, {
           status: 'completed',
         });
         alert('Order marked as completed.');

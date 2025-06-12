@@ -19,17 +19,19 @@ const SignInPage = () => {
         password
       });
 
-      console.log("LOGIN RESPONSE:", res.data); // تسجيل الاستجابة الكاملة
+      console.log("LOGIN RESPONSE:", res.data);
       const role = res.data.role?.trim().toLowerCase();
-      console.log("Stored role:", role); // تسجيل القيمة بعد التحويل لأحرف صغيرة
+      console.log("Stored role:", role);
+
+      // ✅ تعديل هنا: استبدال response بـ res
       localStorage.setItem('access_token', res.data.access);
       localStorage.setItem('refresh_token', res.data.refresh);
-      localStorage.setItem('role', role); // تخزين الدور بأحرف صغيرة
+      localStorage.setItem('role', res.data.role);
       localStorage.setItem('username', res.data.username);
 
       navigate('/HomeMain');
     } catch (err) {
-      console.error("LOGIN ERROR:", err);
+      console.error("LOGIN ERROR:", err.response?.data || err.message);
       setError('Incorrect username or password');
     }
   };

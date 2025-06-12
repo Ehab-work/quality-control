@@ -1,3 +1,4 @@
+// client/src/pages/HomeMain.js
 import React from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { FiLogOut } from 'react-icons/fi';
@@ -12,7 +13,8 @@ const navOptions = [
 
 const HomePage = () => {
   const accessToken = localStorage.getItem('access_token');
-  const role = localStorage.getItem('role');
+  const role = localStorage.getItem('role')?.trim().toLowerCase(); // تأكد من استخدام ?. لتجنب الأخطاء
+  const isSuperuser = localStorage.getItem('is_superuser') === 'true'; // استرجع كقيمة Boolean
 
   // 🔐 حماية ضد غير المسجلين
   if (!accessToken || !role) {
@@ -21,7 +23,7 @@ const HomePage = () => {
 
   // 🎯 فلترة حسب الدور مع تطبيع الحروف
   const filteredOptions = navOptions.filter(option =>
-    role.toLowerCase() === 'ceo' || option.role.toLowerCase() === role.toLowerCase()
+    isSuperuser || option.role.toLowerCase() === role
   );
 
   const handleLogout = () => {
@@ -49,7 +51,7 @@ const HomePage = () => {
       </div>
 
       <div className="split-right">
-        <h2 className="welcome-text">Welcome, {role}</h2>
+        <h2 className="welcome-title">Welcome...</h2>
       </div>
     </div>
   );

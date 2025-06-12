@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; 
 import './ProductPage.css';
 import { Navigate } from 'react-router-dom';
 
@@ -34,7 +34,7 @@ if (!accessToken) return <Navigate to="/" />;
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/products/');
+      const res = await axiosInstance.get('api/products/');
       setProducts(res.data);
     } catch (err) {
       console.error('Failed to fetch products:', err);
@@ -51,10 +51,10 @@ if (!accessToken) return <Navigate to="/" />;
     setMessage('');
     try {
       if (editingId) {
-        await axios.patch(`http://127.0.0.1:8000/api/products/${editingId}/update/`, formData);
+        await axiosInstance.patch(`${editingId}/update/`, formData);
         setMessage('Product updated successfully.');
       } else {
-        await axios.post('http://127.0.0.1:8000/api/add-product/', formData);
+        await axiosInstance.post('add-product/', formData);
         setMessage('Product added successfully.');
       }
       setFormData({
@@ -89,7 +89,7 @@ if (!accessToken) return <Navigate to="/" />;
   const handleDelete = async id => {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/products/${id}/delete/`);
+      await axiosInstance.delete(`products/${id}/delete/`);
       setMessage('Product deleted successfully.');
       if (editingId === id) {
         setEditingId(null);

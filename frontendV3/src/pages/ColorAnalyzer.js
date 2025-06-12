@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; 
 import './ColorAnalyzer.css';
 
 const ColorAnalyzer = () => {
@@ -25,7 +25,7 @@ const ColorAnalyzer = () => {
     setBlackRatio(null);
 
     try {
-      const res = await axios.post('http://127.0.0.1:8000/api/analyze-image/', formData, {
+      const res = await axiosInstance.post('analyze-image/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

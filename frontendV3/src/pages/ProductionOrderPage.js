@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; 
 import './ProductionOrderPage.css';
 
 const ProductionOrderPage = () => {
@@ -22,12 +22,12 @@ const ProductionOrderPage = () => {
   }, []);
 
   const fetchEmployees = async () => {
-    const res = await axios.get('http://127.0.0.1:8000/api/employees/');
+    const res = await axiosInstance.get('employees/');
     setEmployees(res.data);
   };
 
   const fetchProducts = async () => {
-    const res = await axios.get('http://127.0.0.1:8000/api/products/');
+    const res = await axiosInstance.get('products/');
     setProducts(res.data);
   };
 
@@ -73,7 +73,7 @@ const ProductionOrderPage = () => {
     }
 
     try {
-      await axios.post('http://127.0.0.1:8000/api/create-production-order/', {
+      await axiosInstance.post('create-production-order/', {
         employee: formData.employee,
         start_date: formData.start_date,
         expected_end_date: formData.expected_end_date,

@@ -14,12 +14,22 @@ const SupplierPage = () => {
   const [message, setMessage] = useState('');
 
   const fetchSuppliers = async () => {
-    const res = await axiosInstance.get('api/suppliers/');
-    setSuppliers(res.data);
+    try {
+      const res = await axiosInstance.get('suppliers/');
+      setSuppliers(res.data);
+    } catch (error) {
+      console.error('Error fetching suppliers:', error.response?.data || error.message);
+      setMessage('Error loading suppliers.');
+    }
   };
 
   useEffect(() => {
-    fetchSuppliers();
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      window.location.href = '/'; // Redirect to login if no token
+    } else {
+      fetchSuppliers();
+    }
   }, []);
 
   const handleChange = (e) => {
@@ -30,7 +40,7 @@ const SupplierPage = () => {
     e.preventDefault();
     try {
       if (editingId) {
-        await axiosInstance.patch(`${editingId}/update/`, newSupplier);
+        await axiosInstance.patch(`suppliers/${editingId}/update/`, newSupplier);
         setMessage('Supplier updated successfully.');
         setEditingId(null);
       } else {
@@ -40,26 +50,32 @@ const SupplierPage = () => {
       setNewSupplier({ name: '', address: '', phone: '', notes: '' });
       fetchSuppliers();
     } catch (error) {
+      console.error('Save Error:', error.response?.data || error.message);
       setMessage('Error while saving.');
     }
   };
 
   const handleEdit = (supplier) => {
-    setNewSupplier(supplier);
+    setNewSupplier({
+      name: supplier.name,
+      address: supplier.address,
+      phone: supplier.phone,
+      notes: supplier.notes,
+    });
     setEditingId(supplier.id);
     setMessage('');
   };
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this supplier?');
-    if (!confirmDelete) return;
+    if (!window.confirm('Are you sure you want to delete this supplier?')) return;
 
     try {
-      await axiosInstance.delete(`api/suppliers/${id}/delete/`);
+      await axiosInstance.delete(`suppliers/${id}/delete/`);
       setMessage('Supplier deleted successfully.');
       fetchSuppliers();
-    } catch {
-      setMessage('Error while deleting.');
+    } catch (error) {
+      console.error('Error deleting supplier:', error.response?.data || error.message);
+      setMessage('Error occurred while deleting supplier.');
     }
   };
 
@@ -70,11 +86,38 @@ const SupplierPage = () => {
       {message && <div className="message">{message}</div>}
 
       <form className="supplier-form" onSubmit={handleSubmit}>
-        <input type="text" name="name" placeholder="Supplier Name" value={newSupplier.name} onChange={handleChange} required />
-        <input type="text" name="address" placeholder="Address" value={newSupplier.address} onChange={handleChange} required />
-        <input type="text" name="phone" placeholder="Phone" value={newSupplier.phone} onChange={handleChange} required />
-        <input type="text" name="notes" placeholder="Notes" value={newSupplier.notes} onChange={handleChange} />
-        <button type="submit">{editingId ? "Update Supplier" : "Add Supplier"}</button>
+        <input
+          type="text"
+          name="name"
+          placeholder="Supplier Name"
+          value={newSupplier.name}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="address"
+          placeholder="Address"
+          value={newSupplier.address}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="phone"
+          placeholder="Phone"
+          value={newSupplier.phone}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="notes"
+          placeholder="Notes"
+          value={newSupplier.notes}
+          onChange={handleChange}
+        />
+        <button type="submit">{editingId ? 'Update Supplier' : 'Add Supplier'}</button>
       </form>
 
       <table className="supplier-table">

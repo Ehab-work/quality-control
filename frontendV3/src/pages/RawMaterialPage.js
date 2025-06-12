@@ -18,7 +18,7 @@ const RawMaterialPage = () => {
       const res = await axiosInstance.get('raw-materials/');
       setMaterials(res.data);
     } catch (err) {
-      console.error('Error fetching materials:', err);
+      console.error('Error:', err.response?.data || err.message);
     }
   };
 
@@ -45,7 +45,7 @@ const RawMaterialPage = () => {
       setEditingId(null);
       fetchMaterials();
     } catch (err) {
-      console.error('Error saving material:', err);
+      console.error('Error:', err.response?.data || err.message);
       setMessage('Error occurred while saving. Please check your input.');
     }
   };
@@ -68,7 +68,7 @@ const RawMaterialPage = () => {
       setMessage('Raw material deleted successfully.');
       fetchMaterials();
     } catch (err) {
-      console.error('Error deleting material:', err);
+      console.error('Error:', err.response?.data || err.message);
       setMessage('Error occurred while deleting.');
     }
   };
