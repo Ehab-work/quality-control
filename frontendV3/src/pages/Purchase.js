@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { FiLogOut } from 'react-icons/fi';
 import './PurchaseLayout.css';
 
@@ -11,6 +11,22 @@ const navOptions = [
 ];
 
 const Purchase = () => {
+  const accessToken = localStorage.getItem('access_token');
+const role = localStorage.getItem('role');
+const cleanedRole = role?.trim().toLowerCase();
+
+console.log('ROLE FROM STORAGE:', JSON.stringify(role));
+console.log('CLEANED ROLE:', cleanedRole);
+
+if (!accessToken || !cleanedRole) {
+  return <Navigate to="/" />;
+}
+
+if (cleanedRole !== 'purchase') {
+  return <Navigate to="/unauthorized" />;
+}
+
+
   const handleLogout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');

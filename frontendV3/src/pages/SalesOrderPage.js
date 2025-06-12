@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // ✅ يستخدم التوكن تلقائيًا
 import './SalesOrderPage.css';
 
 const SalesOrderPage = () => {
@@ -21,9 +21,9 @@ const SalesOrderPage = () => {
   });
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/clients/').then(res => setClients(res.data));
-    axios.get('http://127.0.0.1:8000/api/employees/').then(res => setEmployees(res.data));
-    axios.get('http://127.0.0.1:8000/api/products/').then(res => setProducts(res.data));
+    axiosInstance.get('clients/').then(res => setClients(res.data));
+    axiosInstance.get('employees/').then(res => setEmployees(res.data));
+    axiosInstance.get('products/').then(res => setProducts(res.data));
   }, []);
 
   const handleAddDetail = () => {
@@ -48,7 +48,7 @@ const SalesOrderPage = () => {
     e.preventDefault();
     const sale_date = new Date().toISOString().split('T')[0];
     try {
-      await axios.post('http://127.0.0.1:8000/api/sales-orders/create/', {
+      await axiosInstance.post('sales-orders/create/', {
         ...form,
         sale_date
       });

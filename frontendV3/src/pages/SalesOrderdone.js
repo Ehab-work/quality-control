@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // 🔁 استبدل axios بـ axiosInstance
 import './SalesOrderdone.css';
 
 const ConfirmedSalesOrdersPage = () => {
@@ -12,7 +12,7 @@ const ConfirmedSalesOrdersPage = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/sales-orders/ready-to-archive/');
+      const res = await axiosInstance.get('sales-orders/ready-to-archive/'); // 🔁 استبدل axios بـ axiosInstance
       setOrders(res.data);
     } catch (err) {
       console.error('Error loading data:', err);
@@ -23,7 +23,7 @@ const ConfirmedSalesOrdersPage = () => {
 
   const markAsReceived = async (orderId) => {
     try {
-      await axios.patch(`http://127.0.0.1:8000/api/sales-orders/${orderId}/mark-delivered/`);
+      await axiosInstance.patch(`sales-orders/${orderId}/mark-delivered/`); // 🔁 استبدل axios بـ axiosInstance
       alert(`Order #${orderId} marked as "Delivered"`);
       fetchOrders();
     } catch (err) {
@@ -53,7 +53,7 @@ const ConfirmedSalesOrdersPage = () => {
             <ul>
               {order.details.map(detail => (
                 <li key={detail.id}>
-                  Product: {detail.product} | Quantity: {detail.quantity} | Price: {detail.unit_price} | Taxes: {detail.taxes}
+                  Product: {detail.product} | Qty: {detail.quantity} | Price: {detail.unit_price} | Tax: {detail.taxes}
                 </li>
               ))}
             </ul>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { FiLogOut } from 'react-icons/fi';
 import './Sales.css';
 
@@ -13,6 +13,17 @@ const navOptions = [
 ];
 
 const Sales = () => {
+  const accessToken = localStorage.getItem('access_token');
+  const role = localStorage.getItem('role');
+
+  if (!accessToken || !role) {
+    return <Navigate to="/" />;
+  }
+
+  if (role.toLowerCase() !== 'sales') {
+    return <Navigate to="/unauthorized" />;
+  }
+
   const handleLogout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
@@ -33,10 +44,9 @@ const Sales = () => {
         <div className="logout-spacer" />
 
         <div className="split-card logout-card" onClick={handleLogout}>
-  <span className="split-icon"><FiLogOut /></span>
-  <span className="split-text">Log out</span>
-</div>
-
+          <span className="split-icon"><FiLogOut /></span>
+          <span className="split-text">Log out</span>
+        </div>
       </div>
 
       <div className="split-right">

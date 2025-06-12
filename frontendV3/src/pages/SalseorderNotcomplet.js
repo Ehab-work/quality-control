@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // 🔁 استبدل axios بـ axiosInstance
 import './SalseorderNotcomplet.css';
 
 const ConfirmedIncompleteSalesOrdersPage = () => {
@@ -12,7 +12,7 @@ const ConfirmedIncompleteSalesOrdersPage = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/sales-orders/confirmed-incomplete/');
+      const res = await axiosInstance.get('sales-orders/confirmed-incomplete/'); // 🔁 استبدل axios بـ axiosInstance
       setOrders(res.data);
     } catch (err) {
       console.error('Error loading orders:', err);

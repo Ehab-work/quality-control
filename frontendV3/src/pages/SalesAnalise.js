@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // 🔁 استبدل axios بـ axiosInstance
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 
@@ -8,9 +8,8 @@ const AnalysisPage = () => {
   const [selectedProduct, setSelectedProduct] = useState('');
   const [allProducts, setAllProducts] = useState([]);
 
-
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/products/')
+    axiosInstance.get('api/products/')
       .then((res) => {
         setAllProducts(res.data);
       })
@@ -21,10 +20,10 @@ const AnalysisPage = () => {
 
   useEffect(() => {
     const url = selectedProduct
-      ? `http://127.0.0.1:8000/api/sales-summary/?product_name=${selectedProduct}`
-      : 'http://127.0.0.1:8000/api/sales-summary/';
+      ? `product_name=${selectedProduct}`
+      : 'sales-summary/';
 
-    axios.get(url)
+    axiosInstance.get(url) // 🔁 استبدل axios بـ axiosInstance
       .then((res) => {
         const labels = res.data.map(item => item.product__name);
         const data = res.data.map(item => item.total_quantity);

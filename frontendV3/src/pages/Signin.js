@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './SignInPage.css'; // Link to the CSS file
+import './SignInPage.css';
 
 const SignInPage = () => {
   const [username, setUsername] = useState('');
@@ -19,10 +19,17 @@ const SignInPage = () => {
         password
       });
 
+      console.log("LOGIN RESPONSE:", res.data); // تسجيل الاستجابة الكاملة
+      const role = res.data.role?.trim().toLowerCase();
+      console.log("Stored role:", role); // تسجيل القيمة بعد التحويل لأحرف صغيرة
       localStorage.setItem('access_token', res.data.access);
       localStorage.setItem('refresh_token', res.data.refresh);
+      localStorage.setItem('role', role); // تخزين الدور بأحرف صغيرة
+      localStorage.setItem('username', res.data.username);
+
       navigate('/HomeMain');
     } catch (err) {
+      console.error("LOGIN ERROR:", err);
       setError('Incorrect username or password');
     }
   };

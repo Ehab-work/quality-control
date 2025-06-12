@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 import './SupplierPage.css';
 
 const SupplierPage = () => {
@@ -14,7 +14,7 @@ const SupplierPage = () => {
   const [message, setMessage] = useState('');
 
   const fetchSuppliers = async () => {
-    const res = await axios.get('http://127.0.0.1:8000/api/suppliers/');
+    const res = await axiosInstance.get('api/suppliers/');
     setSuppliers(res.data);
   };
 
@@ -30,11 +30,11 @@ const SupplierPage = () => {
     e.preventDefault();
     try {
       if (editingId) {
-        await axios.patch(`http://127.0.0.1:8000/api/suppliers/${editingId}/update/`, newSupplier);
+        await axiosInstance.patch(`${editingId}/update/`, newSupplier);
         setMessage('Supplier updated successfully.');
         setEditingId(null);
       } else {
-        await axios.post('http://127.0.0.1:8000/api/add-supplier/', newSupplier);
+        await axiosInstance.post('add-supplier/', newSupplier);
         setMessage('Supplier added successfully.');
       }
       setNewSupplier({ name: '', address: '', phone: '', notes: '' });
@@ -55,7 +55,7 @@ const SupplierPage = () => {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/suppliers/${id}/delete/`);
+      await axiosInstance.delete(`api/suppliers/${id}/delete/`);
       setMessage('Supplier deleted successfully.');
       fetchSuppliers();
     } catch {

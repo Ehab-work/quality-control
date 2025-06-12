@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // 🔁 استخدم instance الموحد
 import './ClientPage.css';
 
 const ClientPage = () => {
@@ -15,7 +15,7 @@ const ClientPage = () => {
 
   const fetchClients = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/clients/');
+      const res = await axiosInstance.get('clients/');
       setClients(res.data);
     } catch (err) {
       console.error('Error fetching clients:', err);
@@ -34,11 +34,11 @@ const ClientPage = () => {
     e.preventDefault();
     try {
       if (editingId) {
-        await axios.patch(`http://127.0.0.1:8000/api/clients/${editingId}/update/`, form);
+        await axiosInstance.patch(`clients/${editingId}/update/`, form);
         setMessage('Client updated successfully');
         setEditingId(null);
       } else {
-        await axios.post('http://127.0.0.1:8000/api/add-client/', form);
+        await axiosInstance.post('add-client/', form);
         setMessage('Client added successfully');
       }
       setForm({ name: '', address: '', phone_number: '', email: '' });
@@ -60,7 +60,7 @@ const ClientPage = () => {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/clients/${id}/delete/`);
+      await axiosInstance.delete(`clients/${id}/delete/`);
       setMessage('Client deleted successfully');
       fetchClients();
     } catch (err) {

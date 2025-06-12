@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // ✅ استخدم التوكن تلقائيًا
 import './PurchaseOrderListPage.css';
 
 const PurchaseOrderListPage = () => {
@@ -11,7 +11,7 @@ const PurchaseOrderListPage = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/list_purchase_orders/');
+      const res = await axiosInstance.get('list_purchase_orders/');
       setOrders(res.data);
     } catch (err) {
       console.error('Error fetching data:', err);

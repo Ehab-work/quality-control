@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Supplier,ProductionOrder,SalesOrder,SalesInvoiceDetail,Client, Employee, ProductionOrderDetail,RawMaterial,PurchaseOrder,ProductionOrder, PurchaseInvoiceDetail,Product,RatioOfProduct
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
@@ -12,20 +13,18 @@ class SupplierSerializer(serializers.ModelSerializer):
         model = Supplier
         fields = '__all__'
 
-class ClientSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Client
-        fields = '__all__'
-
 class RawMaterialSerializer(serializers.ModelSerializer):
     class Meta:
         model = RawMaterial
         fields = '__all__'
-
+        
 class PurchaseInvoiceDetailSerializer(serializers.ModelSerializer):
+    raw_material_name = serializers.CharField(source='raw_material.name', read_only=True)
+
     class Meta:
         model = PurchaseInvoiceDetail
-        fields = ['raw_material', 'quantity', 'unit_price']
+        fields = ['raw_material', 'raw_material_name', 'quantity', 'unit_price']
+
 
 class PurchaseOrderSerializer(serializers.ModelSerializer):
     details = PurchaseInvoiceDetailSerializer(many=True)
@@ -41,13 +40,6 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
             PurchaseInvoiceDetail.objects.create(order=order, **item)
         return order
     
-class PurchaseInvoiceDetailSerializer(serializers.ModelSerializer):
-    raw_material_name = serializers.CharField(source='raw_material.name', read_only=True)
-
-    class Meta:
-        model = PurchaseInvoiceDetail
-        fields = ['raw_material_name', 'quantity', 'unit_price']
-
 class PurchaseOrderListSerializer(serializers.ModelSerializer):
     supplier_name = serializers.CharField(source='supplier.name', read_only=True)
     employee_name = serializers.CharField(source='employee.name', read_only=True)
@@ -154,11 +146,23 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        
-        # أضف role
-        token['role'] = user.employee.role if hasattr(user, 'employee') else 'unknown'
         token['username'] = user.username
+        token['role'] = user.employee.role if hasattr(user, 'employee') else 'unknown'
+        token['is_superuser'] = user.is_superuser  # ✅ أضف هذا السطر
         return token
 
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['username'] = self.user.username
+        data['role'] = self.user.employee.role if hasattr(self.user, 'employee') else 'unknown'
+        data['is_superuser'] = self.user.is_superuser  # ✅ وأضف هذا أيضًا
+        return data
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['username'] = self.user.username
+        data['role'] = self.user.employee.role if hasattr(self.user, 'employee') else 'Unknown'
+        return data
 
 

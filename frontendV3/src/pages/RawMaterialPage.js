@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 import './RawMaterialPage.css';
 
 const RawMaterialPage = () => {
@@ -15,7 +15,7 @@ const RawMaterialPage = () => {
 
   const fetchMaterials = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/raw-materials/');
+      const res = await axiosInstance.get('raw-materials/');
       setMaterials(res.data);
     } catch (err) {
       console.error('Error fetching materials:', err);
@@ -35,10 +35,10 @@ const RawMaterialPage = () => {
     setMessage('');
     try {
       if (editingId) {
-        await axios.patch(`http://127.0.0.1:8000/api/raw-materials/${editingId}/update/`, formData);
+        await axiosInstance.patch(`raw-materials/${editingId}/update/`, formData);
         setMessage('Raw material updated successfully.');
       } else {
-        await axios.post('http://127.0.0.1:8000/api/add-raw-material/', formData);
+        await axiosInstance.post('add-raw-material/', formData);
         setMessage('Raw material added successfully.');
       }
       setFormData({ name: '', quantity: '', unit: '', avg_price: '' });
@@ -64,7 +64,7 @@ const RawMaterialPage = () => {
   const handleDelete = async id => {
     if (!window.confirm('Are you sure you want to delete this raw material?')) return;
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/raw-materials/${id}/delete/`);
+      await axiosInstance.delete(`raw-materials/${id}/delete/`);
       setMessage('Raw material deleted successfully.');
       fetchMaterials();
     } catch (err) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 import './PurchaseOrderPage.css';
 
 const PurchaseOrderPage = () => {
@@ -26,7 +26,7 @@ const PurchaseOrderPage = () => {
 
   const fetchSuppliers = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/suppliers/');
+      const res = await axiosInstance.get('api/suppliers/');
       setSuppliers(res.data);
     } catch (err) {
       console.error('Error fetching suppliers:', err);
@@ -35,7 +35,7 @@ const PurchaseOrderPage = () => {
 
   const fetchMaterials = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/raw-materials/');
+      const res = await axiosInstance.get('raw-materials/');
       setMaterials(res.data);
     } catch (err) {
       console.error('Error fetching materials:', err);
@@ -107,7 +107,7 @@ const PurchaseOrderPage = () => {
     );
 
     try {
-      await axios.post('http://127.0.0.1:8000/api/add-purchase-order/', {
+      await axiosInstance.post('add-purchase-order/', {
         ...formData,
         total_amount: total.toFixed(2)
       });

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ProductPage.css';
+import { Navigate } from 'react-router-dom';
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
@@ -15,6 +16,22 @@ const ProductPage = () => {
   const [editingId, setEditingId] = useState(null);
   const [message, setMessage] = useState('');
 
+  //  حماية الدخول حسب التوكن والدور
+  const accessToken = localStorage.getItem('access_token');
+  const role = localStorage.getItem('role');
+
+  useEffect(() => {
+  fetchProducts();
+}, []);
+
+if (!accessToken) return <Navigate to="/" />;
+
+
+
+  if (!['sales', 'ceo'].includes(role.toLowerCase())) {
+    return <Navigate to="/unauthorized" />;
+  }
+
   const fetchProducts = async () => {
     try {
       const res = await axios.get('http://127.0.0.1:8000/api/products/');
@@ -23,10 +40,6 @@ const ProductPage = () => {
       console.error('Failed to fetch products:', err);
     }
   };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
 
   const handleChange = e => {
     const { name, value } = e.target;

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Purchase from './pages/Purchase';
@@ -18,20 +17,17 @@ import SalesOrderPage from './pages/SalesOrderPage';
 import SalesOrderListPage from './pages/SalesOrderListPage';
 import AnalisePage from './pages/AnalisePage';
 import SalesAnalise from './pages/SalesAnalise';
-
 import EditSalesOrderPage from './pages/EditSalesOrderPage';
 import SalesByClientPage from './pages/SalesByClientPage';
 import IncompletProduction from './pages/IncompletProduction';
 import ColorAnalyzer from './pages/ColorAnalyzer';
-//<Route path="/" element={< />} />
-//import  from './pages/';
 import AnalByrequat from './pages/AnalByrequat';
 import AnalByemployee from './pages/AnalByemployee';
 import AnalByRaw from './pages/AnalByRaw';
 import AnalByProduct from './pages/AnalByProduct';
 import AnalByrequatTop5 from './pages/AnalByrequatTop5';
 import Analcsonyear from './pages/Analcsonyear';
-import AnalClientOrderSummaryPage from './pages/AnalClientOrderSummaryPage';       
+import AnalClientOrderSummaryPage from './pages/AnalClientOrderSummaryPage';
 import AnalTotalproduction from './pages/AnalTotalproduction';
 import AnalRawMaterialUsagePage from './pages/AnalRawMaterialUsagePage';
 import AnalRawMaterialCostPage from './pages/AnalRawMaterialCostPage';
@@ -40,67 +36,215 @@ import Analtopsale from './pages/Analtopsale';
 import AnalProductProfit from './pages/AnalProductProfit';
 import SalseorderNotcomplet from './pages/SalseorderNotcomplet';
 import SalesOrderdone from './pages/SalesOrderdone';
-import Signin from './pages/Signin';
-
-
-
+import SigninPage from './pages/Signin';
+import PrivateRoute from './utils/privateroute';
+import Unauthorized from './pages/Unauthorized';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Signin />} />
-        <Route path="/HomeMain" element={<HomeMain />} />
-        <Route path="/Sales" element={< Sales/>} />
-        <Route path="/suppliers" element={<SupplierPage />} />
-        <Route path="/Purchase" element={<Purchase />} />
-        <Route path="/ProductPage" element={<ProductPage />} />
-        <Route path="/raw-materials" element={<RawMaterialPage />} />
-        <Route path="/purchase-orders" element={<PurchaseOrderPage />} />
-        <Route path="/purchase-orders-list" element={<PurchaseOrderListPage />} />
-        <Route path="/Production" element={<Production/>} />
-        <Route path="/ProductRatioPage" element={<ProductRatioPage/>} />
-        <Route path="/production-orders" element={<ProductionOrderPage />} />
-        <Route path="/production-orders-list" element={<ProductionOrderListPage />} />
-        <Route path="/ClientPage" element={<ClientPage />} />
-        <Route path="/SalesOrderPage" element={<SalesOrderPage />} />
-        <Route path="/SalesOrderListPage" element={<SalesOrderListPage />} />
-        <Route path="/AnalisePage" element={<AnalisePage />} />
-        <Route path="/SalesAnalise" element={<SalesAnalise />} />
-        <Route path="/IncompletProduction" element={<IncompletProduction />} />
-        <Route path="/SalseorderNotcomplet" element={<SalseorderNotcomplet />} />
-        <Route path="/SalesOrderdone" element={<SalesOrderdone />} />
+        <Route path="/" element={<SigninPage />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
 
+        <Route path="/HomeMain" element={
+          <PrivateRoute allowedRoles={['ceo', 'purchase', 'sales', 'production']}>
+            <HomeMain />
+          </PrivateRoute>
+        } />
 
+        <Route path="/Sales" element={
+          <PrivateRoute allowedRoles={['sales', 'ceo']}>
+            <Sales />
+          </PrivateRoute>
+        } />
 
-        
-        <Route path="/edit-sales-order/:id" element={<EditSalesOrderPage />} />
-        <Route path="/SalesByClientPage" element={<SalesByClientPage />} />
-        <Route path="/ColorAnalyzer" element={<ColorAnalyzer />} />
-        <Route path="/AnalByrequat" element={<AnalByrequat />} />
-        <Route path="/AnalByemployee" element={<AnalByemployee />} />
-        <Route path="/AnalByRaw" element={<AnalByRaw />} />
-        <Route path="/AnalByProduct" element={<AnalByProduct />} />
-        <Route path="/AnalByrequatTop5" element={<AnalByrequatTop5 />} />
-        <Route path="/Analcsonyear" element={<Analcsonyear />} />
-        <Route path="/AnalClientOrderSummaryPage" element={<AnalClientOrderSummaryPage />} />
-        <Route path="/AnalTotalproduction" element={<AnalTotalproduction />} />
-        <Route path="/AnalRawMaterialUsagePage" element={<AnalRawMaterialUsagePage />} />
-        <Route path="/AnalRawMaterialCostPage" element={<AnalRawMaterialCostPage />} />
-        <Route path="/AnalCostStokRaw" element={<AnalCostStokRaw />} />
-        <Route path="/Analtopsale" element={<Analtopsale />} />
-        <Route path="/AnalProductProfit" element={<AnalProductProfit />} />
-          
-        
+        <Route path="/suppliers" element={
+          <PrivateRoute allowedRoles={['purchase', 'ceo']}>
+            <SupplierPage />
+          </PrivateRoute>
+        } />
 
-        
+        <Route path="/Purchase" element={
+          <PrivateRoute allowedRoles={['purchase', 'ceo']}>
+            <Purchase />
+          </PrivateRoute>
+        } />
+
+        <Route path="/ProductPage" element={
+          <PrivateRoute allowedRoles={['production', 'ceo']}>
+            <ProductPage />
+          </PrivateRoute>
+        } />
+
+        <Route path="/raw-materials" element={
+          <PrivateRoute allowedRoles={['purchase', 'ceo']}>
+            <RawMaterialPage />
+          </PrivateRoute>
+        } />
+
+        <Route path="/purchase-orders" element={
+          <PrivateRoute allowedRoles={['purchase', 'ceo']}>
+            <PurchaseOrderPage />
+          </PrivateRoute>
+        } />
+
+        <Route path="/purchase-orders-list" element={
+          <PrivateRoute allowedRoles={['purchase', 'ceo']}>
+            <PurchaseOrderListPage />
+          </PrivateRoute>
+        } />
+
+        <Route path="/Production" element={
+          <PrivateRoute allowedRoles={['production', 'ceo']}>
+            <Production />
+          </PrivateRoute>
+        } />
+
+        <Route path="/ProductRatioPage" element={
+          <PrivateRoute allowedRoles={['production', 'ceo']}>
+            <ProductRatioPage />
+          </PrivateRoute>
+        } />
+
+        <Route path="/production-orders" element={
+          <PrivateRoute allowedRoles={['production', 'ceo']}>
+            <ProductionOrderPage />
+          </PrivateRoute>
+        } />
+
+        <Route path="/production-orders-list" element={
+          <PrivateRoute allowedRoles={['production', 'ceo']}>
+            <ProductionOrderListPage />
+          </PrivateRoute>
+        } />
+
+        <Route path="/ClientPage" element={
+          <PrivateRoute allowedRoles={['sales', 'ceo']}>
+            <ClientPage />
+          </PrivateRoute>
+        } />
+
+        <Route path="/SalesOrderPage" element={
+          <PrivateRoute allowedRoles={['sales', 'ceo']}>
+            <SalesOrderPage />
+          </PrivateRoute>
+        } />
+
+        <Route path="/SalesOrderListPage" element={
+          <PrivateRoute allowedRoles={['sales', 'ceo']}>
+            <SalesOrderListPage />
+          </PrivateRoute>
+        } />
+
+        <Route path="/AnalisePage" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <AnalisePage />
+          </PrivateRoute>
+        } />
+        <Route path="/SalesAnalise" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <SalesAnalise />
+          </PrivateRoute>
+        } />
+        <Route path="/IncompletProduction" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <IncompletProduction />
+          </PrivateRoute>
+        } />
+        <Route path="/SalseorderNotcomplet" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <SalseorderNotcomplet />
+          </PrivateRoute>
+        } />
+        <Route path="/SalesOrderdone" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <SalesOrderdone />
+          </PrivateRoute>
+        } />
+        <Route path="/edit-sales-order/:id" element={
+          <PrivateRoute allowedRoles={['sales', 'ceo']}>
+            <EditSalesOrderPage />
+          </PrivateRoute>
+        } />
+        <Route path="/SalesByClientPage" element={
+          <PrivateRoute allowedRoles={['sales', 'ceo']}>
+            <SalesByClientPage />
+          </PrivateRoute>
+        } />
+        <Route path="/ColorAnalyzer" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <ColorAnalyzer />
+          </PrivateRoute>
+        } />
+        <Route path="/AnalByrequat" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <AnalByrequat />
+          </PrivateRoute>
+        } />
+        <Route path="/AnalByemployee" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <AnalByemployee />
+          </PrivateRoute>
+        } />
+        <Route path="/AnalByRaw" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <AnalByRaw />
+          </PrivateRoute>
+        } />
+        <Route path="/AnalByProduct" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <AnalByProduct />
+          </PrivateRoute>
+        } />
+        <Route path="/AnalByrequatTop5" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <AnalByrequatTop5 />
+          </PrivateRoute>
+        } />
+        <Route path="/Analcsonyear" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <Analcsonyear />
+          </PrivateRoute>
+        } />
+        <Route path="/AnalClientOrderSummaryPage" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <AnalClientOrderSummaryPage />
+          </PrivateRoute>
+        } />
+        <Route path="/AnalTotalproduction" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <AnalTotalproduction />
+          </PrivateRoute>
+        } />
+        <Route path="/AnalRawMaterialUsagePage" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <AnalRawMaterialUsagePage />
+          </PrivateRoute>
+        } />
+        <Route path="/AnalRawMaterialCostPage" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <AnalRawMaterialCostPage />
+          </PrivateRoute>
+        } />
+        <Route path="/AnalCostStokRaw" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <AnalCostStokRaw />
+          </PrivateRoute>
+        } />
+        <Route path="/Analtopsale" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <Analtopsale />
+          </PrivateRoute>
+        } />
+        <Route path="/AnalProductProfit" element={
+          <PrivateRoute allowedRoles={['ceo']}>
+            <AnalProductProfit />
+          </PrivateRoute>
+        } />
       </Routes>
     </Router>
   );
 }
 
-
-
 export default App;
-
-

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // 🔁 استبدل axios بـ axiosInstance
 import './SalesByClientPage.css';
 
 const SalesByClientPage = () => {
@@ -16,19 +16,19 @@ const SalesByClientPage = () => {
   }, []);
 
   const fetchClients = async () => {
-    const res = await axios.get('http://127.0.0.1:8000/api/clients/');
+    const res = await axiosInstance.get('api/clients/'); // 🔁 استبدل axios بـ axiosInstance
     setClients(res.data);
   };
 
   const fetchEmployees = async () => {
-    const res = await axios.get('http://127.0.0.1:8000/api/employees/');
+    const res = await axiosInstance.get('/api/employees/'); // 🔁 استبدل axios بـ axiosInstance
     const map = {};
     res.data.forEach(e => map[e.id] = e.name);
     setEmployees(map);
   };
 
   const fetchProducts = async () => {
-    const res = await axios.get('http://127.0.0.1:8000/api/products/');
+    const res = await axiosInstance.get('/api/products/'); // 🔁 استبدل axios بـ axiosInstance
     const map = {};
     res.data.forEach(p => map[p.id] = p.name);
     setProducts(map);
@@ -37,7 +37,7 @@ const SalesByClientPage = () => {
   const fetchOrdersByClient = async () => {
     if (!selectedClient) return;
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/api/sales-orders/by-client/${selectedClient}/`);
+      const res = await axiosInstance.get(`sales-orders/by-client/${selectedClient}/`); // 🔁 استبدل axios بـ axiosInstance
       setOrders(res.data);
     } catch (err) {
       console.error('Error fetching invoices:', err);

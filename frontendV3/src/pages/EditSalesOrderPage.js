@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // 🔁 استبدل axios بـ axiosInstance
 
 const EditSalesOrderPage = () => {
   const { id } = useParams();
@@ -24,9 +24,9 @@ const EditSalesOrderPage = () => {
   const fetchInitialData = async () => {
     try {
       const [orderRes, clientsRes, productsRes] = await Promise.all([
-        axios.get(`http://127.0.0.1:8000/api/sales-orders/${id}/`),
-        axios.get('http://127.0.0.1:8000/api/clients/'),
-        axios.get('http://127.0.0.1:8000/api/products/'),
+        axiosInstance.get(`sales-orders/${id}/`), // 🔁 استبدل axios بـ axiosInstance
+        axiosInstance.get('api/clients/'), // 🔁 استبدل axios بـ axiosInstance
+        axiosInstance.get('api/products/'), // 🔁 استبدل axios بـ axiosInstance
       ]);
 
       setOrder(orderRes.data);
@@ -58,7 +58,7 @@ const EditSalesOrderPage = () => {
 
   const handleSubmit = async () => {
     try {
-      await axios.patch(`http://127.0.0.1:8000/api/sales-orders/${id}/update-all/`, form);
+      await axiosInstance.patch(`${id}/update-all/`, form); // 🔁 استبدل axios بـ axiosInstance
       alert('تم تعديل الفاتورة بنجاح');
       navigate('/Sales');
     } catch (err) {
@@ -119,7 +119,7 @@ const EditSalesOrderPage = () => {
             type="number"
             value={detail.unit_price}
             onChange={(e) => handleDetailChange(idx, 'unit_price', e.target.value)}
-            />
+          />
           <br />
           <label>الضريبة:</label>
           <input

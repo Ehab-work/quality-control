@@ -1,15 +1,14 @@
 from django.urls import path 
 from . import views
 from .views import analyze_uploaded_image
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
-from .views import CustomTokenObtainPairView
 from rest_framework_simplejwt.views import TokenRefreshView
+from .views import CustomTokenObtainPairView
+from .views import add_client
+from .views import CustomTokenView
+
+
 
 urlpatterns = [
-    
     path('analyze-image/', analyze_uploaded_image, name='analyze_uploaded_image'),
     path('employees/', views.list_employees, name='list_employees'),
     path('add-supplier/', views.add_supplier, name='add_supplier'),
@@ -83,11 +82,11 @@ urlpatterns = [
     #
     path('sales-summary/', views.sales_summary, name='sales_summary'),
     path('sales-summary-by-date/', views.sales_summary_by_date, name='sales_summary_by_date'),
-    
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
 
+    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/', CustomTokenView.as_view(), name='token_obtain_pair'),    
+    
 ]
 
     

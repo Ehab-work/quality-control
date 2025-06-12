@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { FiLogOut } from 'react-icons/fi';
 import './AnaliseLayout.css';
 
@@ -11,6 +11,17 @@ const navOptions = [
 ];
 
 const Analise = () => {
+  const accessToken = localStorage.getItem('access_token');
+  const role = localStorage.getItem('role');
+
+  if (!accessToken || !role) {
+    return <Navigate to="/" />;
+  }
+
+  if (role.toLowerCase() !== 'ceo') {
+    return <Navigate to="/unauthorized" />;
+  }
+
   const handleLogout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
