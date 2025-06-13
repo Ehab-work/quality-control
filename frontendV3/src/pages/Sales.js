@@ -3,6 +3,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { FiLogOut } from 'react-icons/fi';
 import './Sales.css';
 
+
 const navOptions = [
   { title: 'Clients', to: '/ClientPage' },
   { title: 'Make Quotation', to: '/SalesOrderPage' },
@@ -14,16 +15,17 @@ const navOptions = [
 
 const Sales = () => {
   const accessToken = localStorage.getItem('access_token');
-  const role = localStorage.getItem('role');
+const role = localStorage.getItem('role');
 
-  if (!accessToken || !role) {
-    return <Navigate to="/" />;
-  }
+if (!accessToken || !role) {
+  return <Navigate to="/" />;
+}
 
-  if (role.toLowerCase() !== 'sales') {
-    return <Navigate to="/unauthorized" />;
-  }
+const allowedRoles = ['sales', 'ceo']; // 👈 أدوار مسموح لها
 
+if (!allowedRoles.includes(role.toLowerCase())) {
+  return <Navigate to="/unauthorized" />;
+}
   const handleLogout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');

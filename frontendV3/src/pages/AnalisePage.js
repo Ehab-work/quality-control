@@ -10,6 +10,9 @@ const navOptions = [
   { title: 'Product Insights', to: '/AnalByProduct' },
 ];
 
+
+
+
 const Analise = () => {
   const accessToken = localStorage.getItem('access_token');
   const role = localStorage.getItem('role');

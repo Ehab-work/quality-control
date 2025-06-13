@@ -33,3 +33,17 @@
     list-style-type: disc;
   }
   
+  .edit-btn {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background-color: #666;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.edit-btn:hover {
+  background-color: #888;
+}

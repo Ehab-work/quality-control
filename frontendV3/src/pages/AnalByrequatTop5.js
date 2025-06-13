@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // ✅ استخدم instance المحمي
 import Select from 'react-select';
 import { Bar } from 'react-chartjs-2';
 import {
@@ -22,7 +22,7 @@ const AnalByrequatTop5 = () => {
   const [average, setAverage] = useState(null);
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/clients/')
+    axiosInstance.get('clients/')
       .then(res => {
         const options = res.data.map(client => ({
           value: client.id,
@@ -40,8 +40,8 @@ const AnalByrequatTop5 = () => {
 
     try {
       const [topProductsRes, averageRes] = await Promise.all([
-        axios.get(`http://127.0.0.1:8000/api/clients/${selected.value}/top-products/`),
-        axios.get(`http://127.0.0.1:8000/api/analytics/client/${selected.value}/average-order/`)
+        axiosInstance.get(`clients/${selected.value}/top-products/`),
+        axiosInstance.get(`analytics/client/${selected.value}/average-order/`)
       ]);
 
       const labels = topProductsRes.data.map(item => item.product__name);

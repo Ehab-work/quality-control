@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // ✅ استخدم axiosInstance
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -23,7 +23,7 @@ const RawMaterialUsagePage = () => {
 
   const fetchRawMaterialUsage = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/analytics/raw-material-usage/');
+      const res = await axiosInstance.get('analytics/raw-material-usage/');
       const rawData = res.data;
 
       const rawMaterials = Object.keys(rawData);

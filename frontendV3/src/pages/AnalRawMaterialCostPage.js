@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -24,7 +24,7 @@ const RawMaterialCostPage = () => {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/analytics/raw-material-costs/');
+      const res = await axiosInstance.get('analytics/raw-material-costs/');
       const labels = res.data.map(item => item.raw_material__name);
       const data = res.data.map(item => item.total_spent);
 

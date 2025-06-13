@@ -6,7 +6,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
-        fields = ['id', 'name', 'address', 'age', 'job_title', 'phone_number', 'national_id']
+        
+        fields = ['id', 'name', 'address', 'age', 'job_title', 'phone_number', 'national_id', 'role']
 
 class SupplierSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,6 +33,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseOrder
         fields = ['id', 'employee', 'supplier', 'order_date', 'total_amount', 'details']
+        
 
     def create(self, validated_data):
         details_data = validated_data.pop('details')
@@ -96,9 +98,9 @@ class ClientSerializer(serializers.ModelSerializer):
         model = Client
         fields = '__all__'
 
-
 class SalesInvoiceDetailSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
+    total_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
 
     class Meta:
         model = SalesInvoiceDetail
@@ -115,6 +117,7 @@ class SalesOrderSerializer(serializers.ModelSerializer):
             'total_amount', 'status', 'client_status', 'delivery_deadline',
             'notes', 'details'
         ]
+        read_only_fields = ['total_amount', 'modified_at']
 
     def create(self, validated_data):
         details_data = validated_data.pop('details')
@@ -141,13 +144,12 @@ class SalesOrderSerializer(serializers.ModelSerializer):
         order.save()
         return order
 
-
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
         token['username'] = user.username
-        token['role'] = user.employee.role if hasattr(user, 'employee') else 'unknown'
+        token['role'] = getattr(user.employee, 'role', 'unknown')
         token['is_superuser'] = user.is_superuser  # هذا السطر مهم
         return token
 

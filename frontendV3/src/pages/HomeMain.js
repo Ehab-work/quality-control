@@ -1,29 +1,28 @@
-// client/src/pages/HomeMain.js
+// src/pages/HomePage.jsx
 import React from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { FiLogOut } from 'react-icons/fi';
+import { FiTruck, FiShoppingCart, FiBarChart2, FiLogOut } from 'react-icons/fi';
+import { GiFactory } from 'react-icons/gi';
 import './HomeMain.css';
 
 const navOptions = [
-  { title: 'Sales', to: '/sales', role: 'Sales' },
-  { title: 'Purchasing', to: '/purchase', role: 'Purchase' },
-  { title: 'Production', to: '/production', role: 'Production' },
-  { title: 'Insights', to: '/AnalisePage', role: 'CEO' },
+  { title: 'Sales', icon: <FiTruck />, to: '/sales', role: 'Sales' },
+  { title: 'Purchasing', icon: <FiShoppingCart />, to: '/purchase', role: 'Purchase' },
+  { title: 'Production', icon: <GiFactory />, to: '/production', role: 'Production' },
+  { title: 'Insights', icon: <FiBarChart2 />, to: '/AnalisePage', role: 'CEO' },
 ];
 
 const HomePage = () => {
   const accessToken = localStorage.getItem('access_token');
-  const role = localStorage.getItem('role')?.trim().toLowerCase(); // تأكد من استخدام ?. لتجنب الأخطاء
-  const isSuperuser = localStorage.getItem('is_superuser') === 'true'; // استرجع كقيمة Boolean
+  const role = localStorage.getItem('role')?.trim().toLowerCase();
+  const isSuperuser = localStorage.getItem('is_superuser') === 'true';
 
-  // 🔐 حماية ضد غير المسجلين
   if (!accessToken || !role) {
     return <Navigate to="/" />;
   }
 
-  // 🎯 فلترة حسب الدور مع تطبيع الحروف
   const filteredOptions = navOptions.filter(option =>
-    isSuperuser || option.role.toLowerCase() === role
+    isSuperuser ||  role === 'ceo' || option.role.toLowerCase() === role
   );
 
   const handleLogout = () => {
@@ -36,8 +35,9 @@ const HomePage = () => {
       <div className="split-left">
         <h2 className="split-title">Factory Dashboard</h2>
 
-        {filteredOptions.map(({ title, to }) => (
+        {filteredOptions.map(({ title, to, icon }) => (
           <Link key={title} to={to} className="split-card">
+            <span className="split-icon">{icon}</span>
             <span className="split-text">{title}</span>
           </Link>
         ))}

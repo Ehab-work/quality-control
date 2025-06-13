@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axiosInstance from '../axiosInstance'; // ✅ يستخدم التوكن تلقائيًا
+import axiosInstance from '../axiosInstance'; 
 import './SalesOrderPage.css';
 
 const SalesOrderPage = () => {
@@ -27,10 +27,18 @@ const SalesOrderPage = () => {
   }, []);
 
   const handleAddDetail = () => {
-    if (!detail.product || !detail.quantity || !detail.unit_price)
-      return alert("Please fill in all product details");
+    if (
+      !detail.product ||
+      !detail.quantity ||
+      !detail.unit_price ||
+      parseFloat(detail.quantity) <= 0 ||
+      parseFloat(detail.unit_price) < 0 ||
+      parseFloat(detail.taxes) < 0
+    ) {
+      return alert("Please enter valid values: Quantity ≥ 1, Unit Price ≥ 0, Taxes ≥ 0");
+    }
 
-    const total_price = detail.quantity * detail.unit_price + parseFloat(detail.taxes || 0);
+    const total_price = parseFloat(detail.quantity) * parseFloat(detail.unit_price) + parseFloat(detail.taxes || 0);
     setForm({
       ...form,
       details: [...form.details, { ...detail, total_price }]
@@ -97,9 +105,29 @@ const SalesOrderPage = () => {
             <option value="">Select Product</option>
             {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
-          <input type="number" placeholder="Quantity" value={detail.quantity} onChange={e => setDetail({ ...detail, quantity: parseInt(e.target.value) })} />
-          <input type="number" placeholder="Unit Price" value={detail.unit_price} onChange={e => setDetail({ ...detail, unit_price: parseFloat(e.target.value) })} />
-          <input type="number" placeholder="Taxes" value={detail.taxes} onChange={e => setDetail({ ...detail, taxes: parseFloat(e.target.value) })} />
+          <input
+            type="number"
+            placeholder="Quantity"
+            min="1"
+            value={detail.quantity}
+            onChange={e => setDetail({ ...detail, quantity: e.target.value })}
+          />
+          <input
+            type="number"
+            placeholder="Unit Price"
+            min="0"
+            step="0.01"
+            value={detail.unit_price}
+            onChange={e => setDetail({ ...detail, unit_price: e.target.value })}
+          />
+          <input
+            type="number"
+            placeholder="Taxes"
+            min="0"
+            step="0.01"
+            value={detail.taxes}
+            onChange={e => setDetail({ ...detail, taxes: e.target.value })}
+          />
           <button type="button" onClick={handleAddDetail}>Add Product</button>
         </div>
 

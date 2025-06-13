@@ -1,7 +1,6 @@
-// src/pages/Analsie.jsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // ✅ استخدم instance المحمي
 import { Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -24,7 +23,7 @@ const Analsie = () => {
 
   const fetchClientSalesShare = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/analytics/client-sales-share/');
+      const res = await axiosInstance.get('analytics/client-sales-share/');
       setSalesData(res.data);
     } catch (err) {
       console.error('Error loading sales share:', err);
@@ -34,11 +33,11 @@ const Analsie = () => {
   };
 
   const chartData = {
-    labels: salesData.map(item => item['saleclientname']),
+    labels: salesData.map(item => item["sale__client__name"]), // ✅ المفتاح الصحيح
     datasets: [
       {
         label: 'Total Sales (EGP)',
-        data: salesData.map(item => item.total_sales),
+        data: salesData.map(item => item["total_sales"]),
         backgroundColor: [
           '#057e76', '#8604a0', '#5ee7df', '#00b3b3',
           '#d6336c', '#ffc107', '#20c997'

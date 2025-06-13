@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // ✅ استخدم instance المحمي
 import {
   Chart as ChartJS,
   Tooltip,
@@ -33,7 +33,7 @@ const ClientQuarterHeatmapPage = () => {
 
   const fetchHeatmapData = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/analytics/client-order-distribution/');
+      const res = await axiosInstance.get('analytics/client-order-distribution/');
       setHeatmapData(res.data);
     } catch (err) {
       console.error('Error fetching heatmap data:', err);

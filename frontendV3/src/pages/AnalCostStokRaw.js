@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 import { Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -23,7 +23,7 @@ const RawMaterialPieChartsPage = () => {
 
   const fetchStockData = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/analytics/raw-material-stock-pie/');
+      const res = await axiosInstance.get('analytics/raw-material-stock-pie/');
       const labels = res.data.map(item => item.name);
       const quantities = res.data.map(item => parseFloat(item.quantity));
       setStockData({
@@ -41,7 +41,7 @@ const RawMaterialPieChartsPage = () => {
 
   const fetchCostData = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/analytics/raw-material-cost-pie/');
+      const res = await axiosInstance.get('analytics/raw-material-cost-pie/');
       const labels = res.data.map(item => item.name);
       const costs = res.data.map(item => parseFloat(item.total_cost));
       setCostData({

@@ -38,14 +38,14 @@ import SalseorderNotcomplet from './pages/SalseorderNotcomplet';
 import SalesOrderdone from './pages/SalesOrderdone';
 import SigninPage from './pages/Signin';
 import PrivateRoute from './utils/privateroute';
-import Unauthorized from './pages/Unauthorized';
+
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<SigninPage />} />
-        <Route path="/unauthorized" element={<Unauthorized />} />
+        
 
         <Route path="/HomeMain" element={
           <PrivateRoute allowedRoles={['ceo', 'purchase', 'sales', 'production']}>
@@ -54,7 +54,7 @@ function App() {
         } />
 
         <Route path="/Sales" element={
-          <PrivateRoute allowedRoles={['sales', 'ceo']}>
+          <PrivateRoute allowedRoles={['sales','ceo']}>
             <Sales />
           </PrivateRoute>
         } />
@@ -148,17 +148,17 @@ function App() {
           </PrivateRoute>
         } />
         <Route path="/IncompletProduction" element={
-          <PrivateRoute allowedRoles={['ceo']}>
+          <PrivateRoute allowedRoles={['ceo','production']}>
             <IncompletProduction />
           </PrivateRoute>
         } />
         <Route path="/SalseorderNotcomplet" element={
-          <PrivateRoute allowedRoles={['ceo']}>
+          <PrivateRoute allowedRoles={['ceo','sales']}>
             <SalseorderNotcomplet />
           </PrivateRoute>
         } />
         <Route path="/SalesOrderdone" element={
-          <PrivateRoute allowedRoles={['ceo']}>
+          <PrivateRoute allowedRoles={['ceo','sales']}>
             <SalesOrderdone />
           </PrivateRoute>
         } />
@@ -173,7 +173,7 @@ function App() {
           </PrivateRoute>
         } />
         <Route path="/ColorAnalyzer" element={
-          <PrivateRoute allowedRoles={['ceo']}>
+          <PrivateRoute allowedRoles={['ceo','production']}>
             <ColorAnalyzer />
           </PrivateRoute>
         } />

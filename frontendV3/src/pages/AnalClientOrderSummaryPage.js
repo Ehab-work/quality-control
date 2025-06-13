@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // ✅ استبدال axios بالنسخة المحمية
 import {
   Chart as ChartJS,
   BarElement,
@@ -28,7 +28,7 @@ const ClientOrderSummaryPage = () => {
 
   const fetchSummary = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/analytics/client-order-summary/');
+      const res = await axiosInstance.get('analytics/client-order-summary/');
       setSummary(res.data);
     } catch (err) {
       console.error('Error fetching summary:', err);

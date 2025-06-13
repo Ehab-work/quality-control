@@ -9,6 +9,7 @@ const RawMaterialPage = () => {
     quantity: '',
     unit: '',
     avg_price: '',
+    lower_limit: '',
   });
   const [editingId, setEditingId] = useState(null);
   const [message, setMessage] = useState('');
@@ -41,7 +42,7 @@ const RawMaterialPage = () => {
         await axiosInstance.post('add-raw-material/', formData);
         setMessage('Raw material added successfully.');
       }
-      setFormData({ name: '', quantity: '', unit: '', avg_price: '' });
+      setFormData({ name: '', quantity: '', unit: '', avg_price: '',lower_limit: '' });
       setEditingId(null);
       fetchMaterials();
     } catch (err) {
@@ -84,7 +85,18 @@ const RawMaterialPage = () => {
         <input type="number" name="quantity" placeholder="Quantity" value={formData.quantity} onChange={handleChange} min="0" step="any" required />
         <input type="text" name="unit" placeholder="Unit (e.g. kg)" value={formData.unit} onChange={handleChange} required />
         <input type="number" name="avg_price" placeholder="Average Price" value={formData.avg_price} onChange={handleChange} min="0" step="any" required />
+        <input type="number" name="lower_limit" placeholder="Lower Limit" value={formData.lower_limit} onChange={handleChange} min="0" step="any" required/>
         <button type="submit">{editingId ? 'Update' : 'Add'}</button>
+        {formData.quantity && formData.lower_limit &&
+  parseFloat(formData.quantity) < parseFloat(formData.lower_limit) && (
+    <p style={{ color: 'red', marginTop: '10px' }}>
+      ⚠️ Warning: Quantity is below the defined lower limit!
+    </p>
+)}
+
+
+
+
       </form>
 
       <h3 className="sub-title">Raw Materials List</h3>
@@ -95,6 +107,7 @@ const RawMaterialPage = () => {
             <th>Quantity</th>
             <th>Unit</th>
             <th>Avg Price</th>
+            <th>Status</th> 
             <th>Actions</th>
           </tr>
         </thead>
@@ -105,9 +118,19 @@ const RawMaterialPage = () => {
               <td>{mat.quantity}</td>
               <td>{mat.unit}</td>
               <td>{mat.avg_price}</td>
+              <td>{mat.lower_limit}</td>
+              <td>
+        {parseFloat(mat.quantity) < parseFloat(mat.lower_limit) ? (
+          <span style={{ color: 'red', fontWeight: 'bold' }}>⚠️ Low Stock</span>
+        ) : (
+          <span style={{ color: 'lightgreen' }}>✔️ OK</span>
+        )}
+      </td>
+              
               <td>
                 <button className="edit-btn" onClick={() => handleEdit(mat)}>Edit</button>
                 <button className="delete-btn" onClick={() => handleDelete(mat.id)}>Delete</button>
+
               </td>
             </tr>
           ))}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axiosInstance from '../axiosInstance'; 
+import axiosInstance from '../axiosInstance';
 import './ProductionOrderPage.css';
 
 const ProductionOrderPage = () => {
@@ -11,10 +11,11 @@ const ProductionOrderPage = () => {
     expected_end_date: '',
     status: 'planned',
     notes: '',
-    details: []
+    details: []  // ← نحتفظ بـ details هنا فقط
   });
   const [newDetail, setNewDetail] = useState({ product: '', quantity: '' });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     fetchEmployees();
@@ -22,13 +23,21 @@ const ProductionOrderPage = () => {
   }, []);
 
   const fetchEmployees = async () => {
-    const res = await axiosInstance.get('employees/');
-    setEmployees(res.data);
+    try {
+      const res = await axiosInstance.get('employees/');
+      setEmployees(res.data);
+    } catch (err) {
+      console.error('Error fetching employees:', err);
+    }
   };
 
   const fetchProducts = async () => {
-    const res = await axiosInstance.get('products/');
-    setProducts(res.data);
+    try {
+      const res = await axiosInstance.get('products/');
+      setProducts(res.data);
+    } catch (err) {
+      console.error('Error fetching products:', err);
+    }
   };
 
   const handleDetailAdd = () => {
@@ -66,6 +75,8 @@ const ProductionOrderPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
 
     if (!formData.employee || !formData.start_date || !formData.expected_end_date || formData.details.length === 0) {
       setError('Please fill in all required fields and add at least one product.');
@@ -73,16 +84,18 @@ const ProductionOrderPage = () => {
     }
 
     try {
-      await axiosInstance.post('create-production-order/', {
-        employee: formData.employee,
+      const payload = {
+        employee: parseInt(formData.employee),
         start_date: formData.start_date,
         expected_end_date: formData.expected_end_date,
         status: formData.status,
         notes: formData.notes,
-        input_details: formData.details
-      });
+        input_details: formData.details  // ← هنا المفتاح الصحيح للسيرفر
+      };
 
-      alert('Production order created successfully.');
+      await axiosInstance.post('create-production-order/', payload);
+      setSuccess('Production order created successfully.');
+
       setFormData({
         employee: '',
         start_date: '',
@@ -92,7 +105,7 @@ const ProductionOrderPage = () => {
         details: []
       });
     } catch (err) {
-      console.error(err);
+      console.error(err.response?.data || err);
       setError('An error occurred while submitting.');
     }
   };
@@ -101,7 +114,6 @@ const ProductionOrderPage = () => {
     <div className="production-order-page">
       <h2 className="section-title">Create Production Order</h2>
       <form onSubmit={handleSubmit} className="production-form">
-
         <label>Employee:</label>
         <select
           name="employee"
@@ -117,7 +129,6 @@ const ProductionOrderPage = () => {
 
         <label>Start Date:</label>
         <input type="date" value={formData.start_date} onChange={e => setFormData({ ...formData, start_date: e.target.value })} required />
-
         <label>Expected End Date:</label>
         <input type="date" value={formData.expected_end_date} onChange={e => setFormData({ ...formData, expected_end_date: e.target.value })} required />
 
@@ -141,6 +152,7 @@ const ProductionOrderPage = () => {
             placeholder="Quantity"
             value={newDetail.quantity}
             onChange={e => setNewDetail({ ...newDetail, quantity: e.target.value })}
+            min="1"
           />
           <button type="button" onClick={handleDetailAdd}>Add</button>
         </div>
@@ -156,6 +168,7 @@ const ProductionOrderPage = () => {
         </ul>
 
         {error && <p className="error-text">{error}</p>}
+        {success && <p className="success-text">{success}</p>}
         <button type="submit" className="submit-btn">Save Production Order</button>
       </form>
     </div>

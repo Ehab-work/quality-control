@@ -35,7 +35,7 @@ const ProductionOrderListPage = () => {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      const res = await axiosInstance.patch(`${orderId}/update-status/`, {
+      const res = await axiosInstance.patch(`production-orders/${orderId}/update-status/`, {
         status: newStatus
       });
       alert(res.data.message || 'Order status updated successfully.');
@@ -49,7 +49,7 @@ const ProductionOrderListPage = () => {
 
   const updateProductStatus = async (detailId, newStatus) => {
     try {
-      const res = await axiosInstance.patch(`${detailId}/update-status/`, {
+      const res = await axiosInstance.patch(`production-orders/details/${detailId}/update-status/`, {
         status: newStatus
       });
       alert(res.data.message || 'Product status updated successfully.');

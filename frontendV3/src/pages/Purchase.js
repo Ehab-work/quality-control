@@ -11,18 +11,19 @@ const navOptions = [
 ];
 
 const Purchase = () => {
-  const accessToken = localStorage.getItem('access_token');
+
+
+
+const accessToken = localStorage.getItem('access_token');
 const role = localStorage.getItem('role');
-const cleanedRole = role?.trim().toLowerCase();
 
-console.log('ROLE FROM STORAGE:', JSON.stringify(role));
-console.log('CLEANED ROLE:', cleanedRole);
-
-if (!accessToken || !cleanedRole) {
+if (!accessToken || !role) {
   return <Navigate to="/" />;
 }
 
-if (cleanedRole !== 'purchase') {
+const allowedRoles = ['purchase', 'ceo']; //  أدوار مسموح لها
+
+if (!allowedRoles.includes(role.toLowerCase())) {
   return <Navigate to="/unauthorized" />;
 }
 

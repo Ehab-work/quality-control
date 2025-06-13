@@ -13,16 +13,20 @@ const navOptions = [
 ];
 
 const Production = () => {
-  const accessToken = localStorage.getItem('access_token');
-  const role = localStorage.getItem('role');
 
-  if (!accessToken || !role) {
-    return <Navigate to="/" />;
-  }
 
-  if (role.trim().toLowerCase() !== 'production') {
-    return <Navigate to="/unauthorized" />;
-  }
+const accessToken = localStorage.getItem('access_token');
+const role = localStorage.getItem('role');
+
+if (!accessToken || !role) {
+  return <Navigate to="/" />;
+}
+
+const allowedRoles = ['production', 'ceo']; //  أدوار مسموح لها
+
+if (!allowedRoles.includes(role.toLowerCase())) {
+  return <Navigate to="/unauthorized" />;
+}
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');

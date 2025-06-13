@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 import {
   Chart as ChartJS,
   BarElement,
@@ -22,7 +22,7 @@ const ProductionTotalByProduct = () => {
 
   const fetchProductionData = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/analytics/production-total-per-product/');
+      const res = await axiosInstance.get('analytics/production-total-per-product/');
       setData(res.data);
     } catch (err) {
       console.error('Failed to fetch production data:', err);

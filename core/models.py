@@ -39,16 +39,23 @@ class Supplier(models.Model):
     def __str__(self):
         return self.name
 
+from django.core.validators import MinValueValidator
 
 class RawMaterial(models.Model):
     name = models.CharField(max_length=255)
     quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     unit = models.CharField(max_length=20)
     avg_price = models.DecimalField(max_digits=10, decimal_places=2)
+    lower_limit = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(0.01)]  # ← لازم يكون > 0
+    )
 
     def __str__(self):
         return self.name
-
+    
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
@@ -57,7 +64,12 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     worst_price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     stock_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
-
+    lower_limit = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(0.01)]  # ← لازم يكون > 0
+    )
     def __str__(self):
         return self.name
 
@@ -159,6 +171,7 @@ class ProductionOrder(models.Model):
 
     def __str__(self):
         return f"Order #{self.id}"
+
 
 
 class ProductionOrderDetail(models.Model):

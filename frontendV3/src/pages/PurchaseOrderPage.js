@@ -26,7 +26,7 @@ const PurchaseOrderPage = () => {
 
   const fetchSuppliers = async () => {
     try {
-      const res = await axiosInstance.get('api/suppliers/');
+      const res = await axiosInstance.get('suppliers/');
       setSuppliers(res.data);
     } catch (err) {
       console.error('Error fetching suppliers:', err);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axiosInstance from '../axiosInstance'; 
+import axiosInstance from '../axiosInstance';
 import './ProductPage.css';
 import { Navigate } from 'react-router-dom';
 
@@ -12,29 +12,26 @@ const ProductPage = () => {
     price: '',
     worst_price: '',
     stock_quantity: '',
+    lower_limit: '',
   });
   const [editingId, setEditingId] = useState(null);
   const [message, setMessage] = useState('');
 
-  //  حماية الدخول حسب التوكن والدور
   const accessToken = localStorage.getItem('access_token');
   const role = localStorage.getItem('role');
 
   useEffect(() => {
-  fetchProducts();
-}, []);
+    fetchProducts();
+  }, []);
 
-if (!accessToken) return <Navigate to="/" />;
-
-
-
-  if (!['sales', 'ceo'].includes(role.toLowerCase())) {
+  if (!accessToken) return <Navigate to="/" />;
+  if (!['production', 'ceo'].includes(role?.toLowerCase())) {
     return <Navigate to="/unauthorized" />;
   }
 
   const fetchProducts = async () => {
     try {
-      const res = await axiosInstance.get('api/products/');
+      const res = await axiosInstance.get('products/');
       setProducts(res.data);
     } catch (err) {
       console.error('Failed to fetch products:', err);
@@ -51,7 +48,7 @@ if (!accessToken) return <Navigate to="/" />;
     setMessage('');
     try {
       if (editingId) {
-        await axiosInstance.patch(`${editingId}/update/`, formData);
+        await axiosInstance.patch(`products/${editingId}/update/`, formData);
         setMessage('Product updated successfully.');
       } else {
         await axiosInstance.post('add-product/', formData);
@@ -64,6 +61,7 @@ if (!accessToken) return <Navigate to="/" />;
         price: '',
         worst_price: '',
         stock_quantity: '',
+        lower_limit: '',
       });
       setEditingId(null);
       fetchProducts();
@@ -81,6 +79,7 @@ if (!accessToken) return <Navigate to="/" />;
       price: product.price,
       worst_price: product.worst_price,
       stock_quantity: product.stock_quantity,
+      lower_limit: product.lower_limit,
     });
     setEditingId(product.id);
     setMessage('');
@@ -100,6 +99,7 @@ if (!accessToken) return <Navigate to="/" />;
           price: '',
           worst_price: '',
           stock_quantity: '',
+          lower_limit: '',
         });
       }
       fetchProducts();
@@ -122,6 +122,7 @@ if (!accessToken) return <Navigate to="/" />;
         <input type="number" name="price" placeholder="Price" value={formData.price} onChange={handleChange} min="0" step="any" required />
         <input type="number" name="worst_price" placeholder="Minimum Cost Price" value={formData.worst_price} onChange={handleChange} min="0" step="any" required />
         <input type="number" name="stock_quantity" placeholder="Stock Quantity" value={formData.stock_quantity} onChange={handleChange} min="0" step="any" required />
+        <input type="number" name="lower_limit" placeholder="Lower Limit" value={formData.lower_limit} onChange={handleChange} min="0.01" step="any" required />
         <button type="submit">{editingId ? 'Update Product' : 'Add Product'}</button>
       </form>
 
@@ -135,6 +136,8 @@ if (!accessToken) return <Navigate to="/" />;
             <th>Price</th>
             <th>Min Cost Price</th>
             <th>Quantity</th>
+            <th>Lower Limit</th>
+            <th>Alert</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -147,6 +150,14 @@ if (!accessToken) return <Navigate to="/" />;
               <td>{p.price}</td>
               <td>{p.worst_price}</td>
               <td>{p.stock_quantity}</td>
+              <td>{p.lower_limit}</td>
+              <td>
+        {parseFloat(p.stock_quantity) < parseFloat(p.lower_limit) ? (
+          <span style={{ color: 'red', fontWeight: 'bold' }}>🔴 Below limit</span>
+        ) : (
+          <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>✅ OK</span>
+        )}
+      </td>
               <td>
                 <button className="edit-btn" onClick={() => handleEdit(p)}>Edit</button>
                 <button className="delete-btn" onClick={() => handleDelete(p.id)}>Delete</button>

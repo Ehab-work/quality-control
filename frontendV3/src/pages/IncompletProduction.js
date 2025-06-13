@@ -12,7 +12,7 @@ const IncompleteProductionOrdersPage = () => {
 
   const fetchIncompleteOrders = async () => {
     try {
-      const res = await axiosInstance.get('production/incomplete/');
+      const res = await axiosInstance.get('production-orders/incomplete/');
       setOrders(res.data);
     } catch (err) {
       console.error('Error fetching incomplete production orders:', err);
@@ -24,7 +24,8 @@ const IncompleteProductionOrdersPage = () => {
   const markAsCompleted = async (orderId) => {
     if (window.confirm('Are you sure you want to mark this order as completed?')) {
       try {
-        await axiosInstance.patch(`${orderId}/update-status/`, {
+        
+        await axiosInstance.patch(`production-orders/${orderId}/update-status/`, {
           status: 'completed',
         });
         alert('Order marked as completed.');

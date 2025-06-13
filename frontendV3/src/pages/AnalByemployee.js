@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance'; // استخدم axiosInstance المحمي
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 import './SalesByDatePage.css';
@@ -17,8 +17,8 @@ const SalesByDatePage = () => {
     }
 
     setLoading(true);
-    axios
-      .get('http://127.0.0.1:8000/api/sales-summary-by-date/', {
+    axiosInstance
+      .get('analytics/sales-summary-by-date/', {
         params: {
           start_date: startDate,
           end_date: endDate,

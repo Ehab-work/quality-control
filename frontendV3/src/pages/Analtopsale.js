@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 import {
   Chart as ChartJS,
   BarElement,
@@ -22,7 +22,7 @@ const TopSellingProductsPage = () => {
 
   const fetchTopProducts = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/analytics/top-selling-products/');
+      const res = await axiosInstance.get('analytics/top-selling-products/');
       const labels = res.data.map(item => item.product__name);
       const values = res.data.map(item => item.total_sold);
 
