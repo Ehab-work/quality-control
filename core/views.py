@@ -6,6 +6,20 @@ from PIL import Image
 import io
 from rest_framework.parsers import MultiPartParser, FormParser
 import cv2
+
+
+from rest_framework.decorators import api_view, permission_classes 
+from rest_framework.permissions import IsAuthenticated 
+from rest_framework.response import Response 
+from rest_framework import status 
+from django.db import transaction 
+from rest_framework.exceptions import ValidationError
+
+from .models import Employee, RatioOfProduct, RawMaterial, ProductionOrderDetail 
+from .serializers import ProductionOrderSerializer 
+from .permissions import RolePermission
+
+
 from django.utils import timezone
 from rest_framework.response import Response
 from django.db.models.functions import ExtractMonth
@@ -562,17 +576,61 @@ def delete_ratio(request, ratio_id):
     ratio.delete()
     return Response({'message': 'Ratio deleted'}, status=status.HTTP_204_NO_CONTENT)
 
-@required_role(['production', 'ceo'])  # ← تحديد الدور
-@api_view(['POST'])    
-@permission_classes([IsAuthenticated, RolePermission])    
-def create_production_order(request):    
-    serializer = ProductionOrderSerializer(data=request.data)    
-    if serializer.is_valid():    
-        serializer.save()    
-        return Response(serializer.data, status=status.HTTP_201_CREATED)    
+
+@required_role(['production', 'ceo'])
+@api_view(['POST']) 
+@permission_classes([IsAuthenticated, RolePermission]) 
+@transaction.atomic
+def create_production_order(request):
+    user = request.user
+    
+    # التحقق من ارتباط المستخدم بموظف
+    try:
+        employee = Employee.objects.get(user=user)
+    except Employee.DoesNotExist:
+        return Response(
+            {"error": "Authenticated user is not linked to any employee."},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    data = request.data.copy()
+    data['employee'] = employee.id
+
+    serializer = ProductionOrderSerializer(data=data, context={'request': request})
+
+    if serializer.is_valid():
+        order_instance = serializer.save()
+
+        # أولًا تحقق أن جميع المواد الخام كافية
+        for detail in order_instance.details.all():
+            product = detail.product
+            quantity = detail.quantity
+
+            ratios = RatioOfProduct.objects.filter(product=product)
+            for ratio in ratios:
+                raw_material = ratio.raw_material
+                total_required = ratio.ratio * quantity
+
+                if raw_material.quantity < total_required:
+                    raise ValidationError(
+                        f"Not enough {raw_material.name} in stock. Required: {total_required}, Available: {raw_material.quantity}"
+                    )
+
+        # إذا كانت المواد الخام كافية، خصم الكميات
+        for detail in order_instance.details.all():
+            product = detail.product
+            quantity = detail.quantity
+
+            ratios = RatioOfProduct.objects.filter(product=product)
+            for ratio in ratios:
+                raw_material = ratio.raw_material
+                total_required = ratio.ratio * quantity
+                raw_material.quantity -= total_required
+                raw_material.save()
+
+        return Response(ProductionOrderSerializer(order_instance).data, status=status.HTTP_201_CREATED)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 @required_role(['production', 'ceo'])  # ← تحديد الدور
 @api_view(['GET'])

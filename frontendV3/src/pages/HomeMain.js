@@ -51,7 +51,8 @@ const HomePage = () => {
       </div>
 
       <div className="split-right">
-        <h2 className="welcome-title">Welcome...</h2>
+        <h2 className="welcome-title">Welcome</h2>
+        <a className ="welcome-text ">Use the left panel to manage your Factory</a>
       </div>
     </div>
   );

@@ -144,6 +144,7 @@ class SalesOrderSerializer(serializers.ModelSerializer):
         order.save()
         return order
 
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):

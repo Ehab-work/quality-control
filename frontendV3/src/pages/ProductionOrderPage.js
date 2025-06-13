@@ -3,33 +3,20 @@ import axiosInstance from '../axiosInstance';
 import './ProductionOrderPage.css';
 
 const ProductionOrderPage = () => {
-  const [employees, setEmployees] = useState([]);
   const [products, setProducts] = useState([]);
   const [formData, setFormData] = useState({
-    employee: '',
     start_date: '',
     expected_end_date: '',
-    status: 'planned',
     notes: '',
-    details: []  // ← نحتفظ بـ details هنا فقط
+    details: []
   });
   const [newDetail, setNewDetail] = useState({ product: '', quantity: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
-    fetchEmployees();
     fetchProducts();
   }, []);
-
-  const fetchEmployees = async () => {
-    try {
-      const res = await axiosInstance.get('employees/');
-      setEmployees(res.data);
-    } catch (err) {
-      console.error('Error fetching employees:', err);
-    }
-  };
 
   const fetchProducts = async () => {
     try {
@@ -78,35 +65,36 @@ const ProductionOrderPage = () => {
     setError('');
     setSuccess('');
 
-    if (!formData.employee || !formData.start_date || !formData.expected_end_date || formData.details.length === 0) {
+    if (!formData.start_date || !formData.expected_end_date || formData.details.length === 0) {
       setError('Please fill in all required fields and add at least one product.');
       return;
     }
 
     try {
       const payload = {
-        employee: parseInt(formData.employee),
         start_date: formData.start_date,
         expected_end_date: formData.expected_end_date,
-        status: formData.status,
         notes: formData.notes,
-        input_details: formData.details  // ← هنا المفتاح الصحيح للسيرفر
+        input_details: formData.details
       };
 
       await axiosInstance.post('create-production-order/', payload);
       setSuccess('Production order created successfully.');
 
       setFormData({
-        employee: '',
         start_date: '',
         expected_end_date: '',
-        status: 'planned',
         notes: '',
         details: []
       });
     } catch (err) {
-      console.error(err.response?.data || err);
-      setError('An error occurred while submitting.');
+      console.error('Response:', err.response?.data);
+      console.error('Status:', err.response?.status);
+      setError(
+        err.response?.data?.error ||
+        JSON.stringify(err.response?.data) ||
+        'An error occurred while submitting.'
+      );
     }
   };
 
@@ -114,23 +102,21 @@ const ProductionOrderPage = () => {
     <div className="production-order-page">
       <h2 className="section-title">Create Production Order</h2>
       <form onSubmit={handleSubmit} className="production-form">
-        <label>Employee:</label>
-        <select
-          name="employee"
-          value={formData.employee}
-          onChange={e => setFormData({ ...formData, employee: e.target.value })}
-          required
-        >
-          <option value="">-- Select Employee --</option>
-          {employees.map(emp => (
-            <option key={emp.id} value={emp.id}>{emp.name}</option>
-          ))}
-        </select>
-
         <label>Start Date:</label>
-        <input type="date" value={formData.start_date} onChange={e => setFormData({ ...formData, start_date: e.target.value })} required />
+        <input
+          type="date"
+          value={formData.start_date}
+          onChange={e => setFormData({ ...formData, start_date: e.target.value })}
+          required
+        />
+
         <label>Expected End Date:</label>
-        <input type="date" value={formData.expected_end_date} onChange={e => setFormData({ ...formData, expected_end_date: e.target.value })} required />
+        <input
+          type="date"
+          value={formData.expected_end_date}
+          onChange={e => setFormData({ ...formData, expected_end_date: e.target.value })}
+          required
+        />
 
         <label>Notes:</label>
         <textarea
@@ -142,7 +128,7 @@ const ProductionOrderPage = () => {
         <h4 className="sub-title">Production Details</h4>
         <div className="detail-row">
           <select value={newDetail.product} onChange={e => setNewDetail({ ...newDetail, product: e.target.value })}>
-            <option value="">-- Select Product --</option>
+            <option value="">--Select Product--</option>
             {products.map(p => (
               <option key={p.id} value={p.id}>{p.name}</option>
             ))}
@@ -158,13 +144,16 @@ const ProductionOrderPage = () => {
         </div>
 
         <ul className="detail-list">
-          {formData.details.map((d, i) => (
-            <li key={i}>
-              Product #{d.product} - Quantity: {d.quantity}
-              <button className="edit-btn" onClick={() => handleDetailEdit(i)}>Edit</button>
-              <button className="delete-btn" onClick={() => handleDetailDelete(i)}>Delete</button>
-            </li>
-          ))}
+          {formData.details.map((d, i) => {
+            const productName = products.find(p => p.id === d.product)?.name || `#${d.product}`;
+            return (
+              <li key={i}>
+                Product: {productName} - Quantity: {d.quantity}
+                <button className="edit-btn" onClick={() => handleDetailEdit(i)}>Edit</button>
+                <button className="delete-btn" onClick={() => handleDetailDelete(i)}>Delete</button>
+              </li>
+            );
+          })}
         </ul>
 
         {error && <p className="error-text">{error}</p>}
@@ -176,3 +165,4 @@ const ProductionOrderPage = () => {
 };
 
 export default ProductionOrderPage;
+          
