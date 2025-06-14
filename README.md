@@ -20,7 +20,7 @@ This is a Django-based web application for managing production and quality contr
 
 ```bash
 git clone https://github.com/Ehab-work/quality-control
-cd management_productv3\management_productV3\venv\management_product\
+cd quality-control
 ```
 
 ### 2. Create Virtual Environment
