@@ -44,7 +44,7 @@ const SignInPage = () => {
 
       <form onSubmit={handleLogin} className="signin-form">
         <div className="signin-field">
-          <label className="signin-label">Username:</label>
+          <label className="signin-label">Email Address :</label>
           <input
             type="text"
             value={username}
@@ -54,7 +54,7 @@ const SignInPage = () => {
           />
         </div>
         <div className="signin-field">
-          <label className="signin-label">Password:</label>
+          <label className="signin-label">Password :</label>
           <input
             type="password"
             value={password}
