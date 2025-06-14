@@ -46,6 +46,8 @@ pip install -r requirements.txt
 ### 4. Run Migrations
 
 ```bash
+pip install Pillow
+pip install opencv-python
 python manage.py migrate
 ```
 
